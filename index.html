@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pintu Masuk Bukan Destinasi: Wisatawan Mancanegara Indonesia</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1f2328;--mute:#5b6370;--card:#fff;--line:#d9d6cc;--acc:#0072B2;--todo:#b45309}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#14171c;--ink:#e8e6e1;--mute:#a0a7b3;--card:#1c2027;--line:#33383f;--acc:#56B4E9;--todo:#f59e0b}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 Georgia,"Times New Roman",serif}
+main{max-width:980px;margin:0 auto;padding:0 18px 60px}
+.hero{padding:15vh 0 8vh}
+.hero small{font:600 13px/1 system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+.hero h1{font-size:clamp(2rem,6vw,3.6rem);line-height:1.1;margin:.4em 0}
+.stat{font:700 clamp(3rem,12vw,6rem)/1 system-ui,sans-serif;color:var(--acc);margin:.2em 0 0}
+section{padding:7vh 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(1.4rem,3.5vw,2rem);margin:0 0 .4em}
+p{max-width:68ch}
+figure{margin:1.5em 0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+figcaption.sumber{font:12px/1.5 system-ui,sans-serif;color:var(--mute);margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.todo{color:var(--todo);font-weight:600}
+.ph{border:2px dashed var(--line);border-radius:10px;padding:34px 16px;text-align:center;color:var(--mute);font:14px system-ui,sans-serif}
+#crumb{font:14px system-ui,sans-serif;margin-bottom:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+#crumb button{font:inherit;color:var(--acc);background:none;border:0;padding:2px 4px;cursor:pointer;text-decoration:underline}
+#crumb .now{font-weight:700}
+#sankey{width:100%}
+#sankey svg{display:block;width:100%;height:auto}
+#sankey text{fill:var(--ink);font-family:system-ui,sans-serif}
+.node-k{cursor:pointer}
+.note{font:13px/1.5 system-ui,sans-serif;color:var(--mute)}
+#tip{position:fixed;z-index:9;pointer-events:none;opacity:0;background:var(--ink);color:var(--bg);padding:7px 10px;border-radius:6px;font:13px/1.4 system-ui,sans-serif;max-width:240px}
+footer{font:13px system-ui,sans-serif;color:var(--mute);padding:30px 0;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+  <small>Webstory data BPS · Pariwisata mancanegara</small>
+  <h1>Pintu masuk bukan destinasi</h1>
+  <p class="stat" id="stat">…</p>
+  <p id="statTxt">Memuat data…</p>
+</header>
+
+<section id="tren">
+  <h2>1. Dari jurang pandemi ke pemulihan</h2>
+  <figure><div class="ph">Line chart bulanan kunjungan wisman 2019-2025 (menunggu data publikasi 2019-2023)</div></figure>
+</section>
+
+<section id="aliran">
+  <h2>2. Dari mana wisatawan datang, lewat mana mereka masuk</h2>
+  <p>Lebar pita menunjukkan jumlah kunjungan (posisi dan ukuran = volume; warna = kawasan asal). Klik sebuah kawasan untuk melihat negara asalnya.</p>
+  <figure>
+    <nav id="crumb" aria-label="Posisi tampilan"></nav>
+    <div id="sankey"></div>
+    <p class="note" id="sankeyNote"></p>
+    <figcaption class="sumber" id="srcAliran"></figcaption>
+  </figure>
+  <figure><div class="ph">Flow map: busur negara asal → pintu masuk (tahap berikutnya)</div></figure>
+  <figure><div class="ph">Matriks asal-tujuan kawasan × pintu masuk (tahap berikutnya)</div></figure>
+</section>
+
+<section id="hierarki">
+  <h2>3. Seberapa besar ekonomi akomodasi dan makan minum?</h2>
+  <figure><div class="ph">Treemap + icicle PDRB dengan breadcrumb (data: data/hierarki_pdrb.json)</div></figure>
+</section>
+
+<section id="teks">
+  <h2>4. Bahasa Berita Resmi Statistik berubah bersama pandemi</h2>
+  <figure><div class="ph">Frekuensi kata, tren kata, dan jaringan bigram (menunggu korpus BRS)</div></figure>
+</section>
+
+<footer>Proyek UAS Visualisasi Data dan Informasi · <span class="todo">[isi URL repo]</span></footer>
+</main>
+<div id="tip" role="tooltip"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-sankey/0.12.3/d3-sankey.min.js"></script>
+<script>
+// Palet Okabe-Ito (ramah buta warna)
+const WARNA={'ASEAN':'#E69F00','Asia Lainnya':'#0072B2','Timur Tengah':'#009E73','Eropa':'#CC79A7','Amerika':'#D55E00','Oseania':'#56B4E9','Afrika':'#7a7a7a'};
+const fmt=new Intl.NumberFormat('id-ID');
+const tip=d3.select('#tip');
+let DATA,VIEW='semua';
+
+function sumber(meta,judul){
+  const u=meta.url?`<a href="${meta.url}">${meta.url}</a>`:'<span class="todo">[ISI URL]</span>';
+  const t=meta.tanggal_akses||'<span class="todo">[ISI TANGGAL AKSES]</span>';
+  return `<b>${judul}</b><br>Sumber: ${meta.sumber}. Tahun data: ${meta.tahun}. URL: ${u}. Diakses: ${t}.`;
+}
+function showTip(ev,html){
+  tip.html(html).style('opacity',1);
+  const w=tip.node().offsetWidth;let x=ev.clientX+14,y=ev.clientY+14;
+  if(x+w>innerWidth-8)x=ev.clientX-w-14;
+  tip.style('left',Math.max(8,x)+'px').style('top',y+'px');
+}
+const hideTip=()=>tip.style('opacity',0);
+
+function crumb(){
+  const c=document.getElementById('crumb');c.innerHTML='';
+  const b=document.createElement('button');b.textContent='Semua kawasan';b.onclick=()=>tampil('semua');
+  if(VIEW==='semua'){const s=document.createElement('span');s.className='now';s.textContent='Semua kawasan';c.append(s);}
+  else{c.append(b,' › ');const s=document.createElement('span');s.className='now';s.textContent=VIEW;c.append(s);}
+}
+
+function gambar(nodes,links,onNode){
+  const el=document.getElementById('sankey');el.innerHTML='';
+  const W=Math.max(300,el.clientWidth),mob=W<560;
+  const m={t:8,r:mob?104:170,b:8,l:mob?94:120};
+  const H=Math.max(mob?520:440,nodes.length*(mob?27:24));
+  const svg=d3.select(el).append('svg').attr('viewBox',[0,0,W,H]).attr('role','img')
+    .attr('aria-label','Diagram Sankey aliran wisatawan mancanegara 2024');
+  const sk=d3.sankey().nodeId(d=>d.id).nodeAlign(d3.sankeyLeft).nodeWidth(12)
+    .nodePadding(mob?10:12).extent([[m.l,m.t],[W-m.r,H-m.b]]);
+  const g=sk({nodes:nodes.map(d=>({...d})),links:links.map(d=>({...d}))});
+  const fs=mob?9.5:12;
+
+  svg.append('g').attr('fill','none').selectAll('path').data(g.links).join('path')
+    .attr('d',d3.sankeyLinkHorizontal()).attr('stroke',d=>d.color)
+    .attr('stroke-width',d=>Math.max(1,d.width)).attr('stroke-opacity',.45)
+    .on('pointermove',(ev,d)=>{d3.select(ev.currentTarget).attr('stroke-opacity',.8);
+      showTip(ev,`<b>${d.source.label} → ${d.target.label}</b><br>${fmt.format(d.value)} kunjungan<br>${(d.value/DATA.meta.total*100).toFixed(1)}% dari total wisman 2024`)})
+    .on('pointerleave',ev=>{d3.select(ev.currentTarget).attr('stroke-opacity',.45);hideTip()});
+
+  const n=svg.append('g').selectAll('g').data(g.nodes).join('g');
+  n.append('rect').attr('x',d=>d.x0).attr('y',d=>d.y0).attr('width',d=>d.x1-d.x0)
+    .attr('height',d=>Math.max(1,d.y1-d.y0)).attr('fill',d=>d.color)
+    .attr('class',d=>d.klik?'node-k':null).attr('tabindex',d=>d.klik?0:null)
+    .on('pointermove',(ev,d)=>showTip(ev,`<b>${d.label}</b><br>${fmt.format(d.value)} kunjungan`+(d.klik?'<br><i>Klik untuk rincian</i>':'')))
+    .on('pointerleave',hideTip)
+    .on('click',(ev,d)=>d.klik&&onNode(d))
+    .on('keydown',(ev,d)=>{if(d.klik&&ev.key==='Enter')onNode(d)});
+  n.append('text').attr('font-size',fs).attr('dy','0.35em')
+    .attr('x',d=>d.targetLinks.length?d.x1+6:d.x0-6).attr('y',d=>(d.y0+d.y1)/2)
+    .attr('text-anchor',d=>d.targetLinks.length?'start':'end').text(d=>mob?d.label.replace(/ \(.*\)$/,''):d.label)
+    .style('cursor',d=>d.klik?'pointer':null).on('click',(ev,d)=>d.klik&&onNode(d));
+}
+
+function tampil(v){
+  VIEW=v;crumb();hideTip();
+  const P=Object.fromEntries(DATA.pintu.map(p=>[p.id,p]));
+  const note=document.getElementById('sankeyNote');
+  const warnaPintu='#4a5160';
+  if(v==='semua'){
+    const nodes=[...DATA.kawasan.map(k=>({id:'k:'+k.id,label:k.nama,color:WARNA[k.id],klik:k.id})),
+                 ...DATA.pintu.map(p=>({id:'p:'+p.id,label:p.nama_pendek,color:warnaPintu}))];
+    const links=DATA.links.map(l=>({source:'k:'+l.kawasan,target:'p:'+l.pintu,value:l.nilai,color:WARNA[l.kawasan]}));
+    gambar(nodes,links,d=>tampil(d.klik));
+    note.textContent='* Perbatasan Laut/Darat adalah agregat BPS tanpa lokasi rinci. "Pintu lainnya" menggabungkan 19 pintu kecil.';
+  }else{
+    const rows=DATA.negara.filter(r=>r.kawasan===v);
+    const pid=[...new Set(rows.map(r=>r.pintu))],ng=[...new Set(rows.map(r=>r.negara))];
+    const nodes=[...ng.map(n=>({id:'n:'+n,label:n,color:WARNA[v]})),
+                 ...pid.map(i=>({id:'p:'+i,label:P[i].nama_pendek,color:warnaPintu}))];
+    const links=rows.map(r=>({source:'n:'+r.negara,target:'p:'+r.pintu,value:r.nilai,color:WARNA[v]}));
+    gambar(nodes,links,()=>{});
+    note.textContent=`Rincian negara asal untuk kawasan ${v}. Gunakan "Semua kawasan" di atas untuk kembali.`;
+  }
+}
+
+fetch('data/aliran_wisman_2024.json').then(r=>r.json()).then(d=>{
+  DATA=d;
+  const top=d.pintu[0],pct=(top.total/d.meta.total*100).toFixed(0);
+  document.getElementById('stat').textContent=pct+'%';
+  document.getElementById('statTxt').textContent=
+    `dari ${fmt.format(d.meta.total)} kunjungan wisman 2024 masuk lewat satu pintu: ${top.nama_pendek}.`;
+  document.getElementById('srcAliran').innerHTML=sumber(d.meta,'Kunjungan wisman 2024 menurut kebangsaan dan pintu masuk');
+  tampil('semua');
+  let t;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(()=>tampil(VIEW),200)});
+}).catch(e=>{document.getElementById('statTxt').textContent=
+  'Gagal memuat data. Jalankan lewat server (mis. python -m http.server), bukan file://. '+e;});
+</script>
+</body>
+</html>

@@ -23,7 +23,6 @@ figcaption.sumber{font:12px/1.5 system-ui,sans-serif;color:var(--mute);margin-to
 .todo{color:var(--todo);font-weight:600}
 .ph{border:2px dashed var(--line);border-radius:10px;padding:34px 16px;text-align:center;color:var(--mute);font:14px system-ui,sans-serif}
 #crumb,#hCrumb{font:14px system-ui,sans-serif;margin-bottom:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-#crumb button,#hCrumb button{font:inherit;color:var(--acc);background:none;border:0;padding:2px 4px;cursor:pointer;text-decoration:underline}
 #crumb .now,#hCrumb .now{font-weight:700}
 #sankey{width:100%}
 #sankey svg{display:block;width:100%;height:auto}
@@ -197,7 +196,7 @@ function tampil(v){
   const warnaPintu='#4a5160';
   if(v==='semua'){
     const nodes=[...DATA.kawasan.map(k=>({id:'k:'+k.id,label:k.nama,color:WARNA[k.id],klik:k.id})),
-                 ...DATA.pintu.map(p=>({id:'p:'+p.id,label:p.nama_pendek,color:warnaPintu}))];
+                ...DATA.pintu.map(p=>({id:'p:'+p.id,label:p.nama_pendek,color:warnaPintu}))];
     const links=DATA.links.map(l=>({source:'k:'+l.kawasan,target:'p:'+l.pintu,value:l.nilai,color:WARNA[l.kawasan]}));
     gambar(nodes,links,d=>tampil(d.klik));
     note.textContent='* Perbatasan Laut/Darat adalah agregat BPS tanpa lokasi rinci. "Pintu lainnya" menggabungkan 19 pintu kecil.';
@@ -205,7 +204,7 @@ function tampil(v){
     const rows=DATA.negara.filter(r=>r.kawasan===v);
     const pid=[...new Set(rows.map(r=>r.pintu))],ng=[...new Set(rows.map(r=>r.negara))];
     const nodes=[...ng.map(n=>({id:'n:'+n,label:n,color:WARNA[v]})),
-                 ...pid.map(i=>({id:'p:'+i,label:P[i].nama_pendek,color:warnaPintu}))];
+                ...pid.map(i=>({id:'p:'+i,label:P[i].nama_pendek,color:warnaPintu}))];
     const links=rows.map(r=>({source:'n:'+r.negara,target:'p:'+r.pintu,value:r.nilai,color:WARNA[v]}));
     gambar(nodes,links,()=>{});
     note.textContent=`Rincian negara asal untuk kawasan ${v}. Gunakan "Semua kawasan" di atas untuk kembali.`;

@@ -291,13 +291,13 @@ function petaUpdate(anim){
   {const n=sel.size?6:5,seen=new Set(),pick=[];
     B.arcs.filter(d=>on(d.kawasan)).slice(0,30).map(d=>{const p=document.getElementById(d.id);return p?{d,p,L:p.getTotalLength()}:null}).filter(Boolean)
       .sort((a,b)=>b.L-a.L).forEach(o=>{if(pick.length<n&&!seen.has(o.d.negara)){seen.add(o.d.negara);pick.push(o)}});
-    const sc=B.mob?1.15:1.55;
     const pl=pick.map((o,i)=>{
-      const g=B.gpl.append('g').style('opacity',0);g.append('path').attr('d','M-7,-2.4 L4,-2.4 L8,-7 L10,-7 L7.6,-2.4 L11,-2.4 L13,0 L11,2.4 L7.6,2.4 L10,7 L8,7 L4,2.4 L-7,2.4 L-9,5 L-10,5 L-9,0 L-10,-5 L-9,-5Z').attr('fill','#FFFAF0').attr('stroke','var(--ink)').attr('stroke-width',.9).attr('stroke-linejoin','round');
+      const g=B.gpl.append('g').style('opacity',0),pw=B.mob?52:80,ph=pw*80/280;g.append('g').attr('class','flip').append('image').attr('href','assets/pesawat.webp').attr('x',-pw/2).attr('y',-ph/2).attr('width',pw).attr('height',ph).style('filter','drop-shadow(0 0 1.5px #fff) drop-shadow(0 1px 2px rgba(21,48,63,.45))');
       return {g,p:o.p,L:o.L,dur:Math.max(6000,Math.min(15000,o.L/55*1000)),off:i*1900}});
     const place=(o,f)=>{const s0=f*o.L,a=o.p.getPointAtLength(s0),b=o.p.getPointAtLength(Math.min(o.L,s0+2)),c=o.p.getPointAtLength(Math.max(0,s0-2));
-      o.g.attr('transform',`translate(${a.x},${a.y}) rotate(${Math.atan2(b.y-c.y,b.x-c.x)*180/Math.PI}) scale(${sc})`)
-        .style('opacity',Math.min(1,f/.08,(1-f)/.08))};
+      const ang=Math.atan2(b.y-c.y,b.x-c.x)*180/Math.PI;
+      o.g.attr('transform',`translate(${a.x},${a.y}) rotate(${ang})`).style('opacity',Math.min(1,f/.08,(1-f)/.08));
+      o.g.select('.flip').attr('transform',Math.abs(ang)>90?'scale(1,-1)':null)};
     if(!MOTION)pl.forEach((o,i)=>{place(o,.22+.11*i);o.g.style('opacity',1)});
     else MP.tm=d3.timer(t=>pl.forEach(o=>place(o,((t+o.off)%o.dur)/o.dur)))}
   // daftar peringkat + catatan

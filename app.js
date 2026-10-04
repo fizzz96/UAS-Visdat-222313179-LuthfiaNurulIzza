@@ -78,8 +78,8 @@ function hero(){
   const T=D.meta.total,top=D.pintu.filter(p=>p.kategori.startsWith('Bandara')).sort((a,b)=>b.total-a.total)[0],p=T?top.total/T*100:0;
   $('#stat').textContent=Math.round(p)+'%';
   $('#statTxt').textContent=`kunjungan masuk lewat satu bandara: ${top.nama_pendek}.`;
-  const lead=p>=40&&p<50?'Hampir separuhnya':`${pct(top.total,T,0)} di antaranya`;
-  $('#heroLead').innerHTML=`Sepanjang 2024, <b>${juta(T)}</b> kunjungan wisatawan asing tercatat di pintu masuk Indonesia. ${lead} mendarat di satu bandara saja. Ayo kita ikuti perjalanan mereka, dari tiket sampai ke meja makan.`;
+  const lead=p>=40&&p<50?'hampir separuhnya':`${pct(top.total,T,0)} di antaranya`;
+  $('#heroLead').innerHTML=`Sepanjang 2024, <b>${juta(T)}</b> kunjungan wisatawan asing tercatat di pintu masuk Indonesia, dan ${lead} mendarat di satu bandara saja. Ayo kita ikuti perjalanan mereka, dari tiket sampai ke meja makan.`;
   $('#stubAsal').textContent=new Set(D.negara.map(r=>r.negara)).size+' negara dan kawasan';
   const tot=group(D.negara,r=>r.negara,r=>r.nilai);
   $('#heroFlags').innerHTML=sortedEntries(tot).filter(([n])=>ISO[n]).slice(0,10).map(([n])=>flagImg(n)).join('');
@@ -101,12 +101,12 @@ function trenInit(d){
   if(a!==s24)$('#trenNote').innerHTML=`Catatan: jumlah bulanan 2024 pada tabel ini (${fmt.format(s24)}) berbeda dari total pada diagram aliran (${fmt.format(a)}) karena berasal dari dua edisi publikasi: diagram aliran dari <i>Statistik Kunjungan Wisatawan Mancanegara 2024</i>, tren bulanan dari edisi 2025 yang dipakai sebagai angka rujukan.`;
   const endOf=y=>new Date(y,11,1);
   const steps=[
-    {t:'2019: sebelum badai',p:`Sepanjang 2019 tercatat <b>${num(t[2019])}</b> kunjungan, rata-rata ${ribu(avg19)} per bulan. Anggap ini garis dasar: patokan untuk menimbang semua yang terjadi sesudahnya.`,end:endOf(2019),stamp:['Indonesia']},
-    {t:'Maret 2020: pintu ditutup',p:`Dalam hitungan bulan, kunjungan runtuh. Titik terendah jatuh pada ${MONF[lo.t.getMonth()]} ${lo.t.getFullYear()}: hanya <b>${num(lo.wisman)}</b> kunjungan, sekitar ${pct(lo.wisman,avg19,0)} dari rata-rata bulanan 2019.`,end:endOf(2020),hand:'Bandara mendadak lengang.'},
-    {t:'2021: setahun yang sepi',p:`Seluruh 2021 hanya mencatat <b>${num(t[2021])}</b> kunjungan, ${pct(t[2021],t[2019])} dari 2019. Area abu-abu menandai masa pandemi menurut data ini (Mar 2020 sampai Des 2021).`,end:endOf(2021)},
-    {t:'2022–2023: pelan, tapi naik',p:`Tahun 2022 mencatat ${num(t[2022])} kunjungan, lalu 2023 melompat ke <b>${num(t[2023])}</b>, atau ${pct(t[2023],t[2019],0)} dari 2019.`,end:endOf(2023)},
-    {t:'2024–2025: hampir kembali',p:`Pada 2024 tercatat ${num(t[2024])} kunjungan dan pada 2025 <b>${num(t[2025])}</b>, atau ${pct(t[2025],t[2019])} dari 2019. ${t[2025]>=t[2019]?'Angka 2019 akhirnya terlampaui.':'Garis dasar 2019 belum sepenuhnya terkejar.'}`,end:endOf(2025),stamp:['Indonesia','Australia']},
-    {t:'Giliranmu menjelajah',p:`Arahkan kursor (atau sentuh) grafik untuk melihat angka tiap bulan. Tombol di atas grafik mengganti tampilan menjadi tumpukan tahun: satu garis untuk satu tahun, dibaca dari Januari sampai Desember.`,end:endOf(2025),free:true}];
+    {t:'2019: sebelum badai',p:`Sepanjang 2019 tercatat <b>${num(t[2019])}</b> kunjungan, atau rata-rata ${ribu(avg19)} per bulan. Anggap saja ini garis dasar, patokan untuk menimbang semua yang terjadi sesudahnya.`,end:endOf(2019),stamp:['Indonesia']},
+    {t:'Maret 2020: pintu ditutup',p:`Dalam hitungan bulan, kunjungan runtuh dan titik terendahnya terjadi pada ${MONF[lo.t.getMonth()]} ${lo.t.getFullYear()}, ketika hanya <b>${num(lo.wisman)}</b> kunjungan tercatat, sekitar ${pct(lo.wisman,avg19,0)} dari rata-rata bulanan 2019.`,end:endOf(2020),hand:'Bandara mendadak lengang.'},
+    {t:'2021: setahun yang sepi',p:`Sepanjang 2021 hanya tercatat <b>${num(t[2021])}</b> kunjungan, atau ${pct(t[2021],t[2019])} dari 2019. Area abu-abu menandai masa pandemi menurut data ini, yaitu Maret 2020 sampai Desember 2021.`,end:endOf(2021)},
+    {t:'2022–2023: pelan, tapi naik',p:`Pada 2022 kunjungan mulai merambat naik hingga ${num(t[2022])}, lalu 2023 melompat ke <b>${num(t[2023])}</b>, atau ${pct(t[2023],t[2019],0)} dari angka 2019.`,end:endOf(2023)},
+    {t:'2024–2025: hampir kembali',p:`Pada 2024 tercatat ${num(t[2024])} kunjungan, lalu pada 2025 naik menjadi <b>${num(t[2025])}</b>, atau ${pct(t[2025],t[2019])} dari 2019. ${t[2025]>=t[2019]?'Dengan begitu angka 2019 akhirnya terlampaui.':'Namun garis dasar 2019 belum sepenuhnya terkejar.'}`,end:endOf(2025),stamp:['Indonesia','Australia']},
+    {t:'Giliranmu menjelajah',p:`Arahkan kursor (atau sentuh) grafik untuk melihat angka tiap bulan. Tombol di atas grafik juga bisa mengganti tampilan menjadi tumpukan tahun, yaitu satu garis untuk satu tahun yang dibaca dari Januari sampai Desember.`,end:endOf(2025),free:true}];
   TR.end=steps[0].end;
   segment('segTren',[['seri','Linimasa'],['tahun','Tumpuk per tahun']],()=>TR.mode,v=>{TR.mode=v;trenRender(false);segment('segTren',[['seri','Linimasa'],['tahun','Tumpuk per tahun']],()=>TR.mode,arguments.callee)});
   scrolly('sc-tren',steps,(i,s)=>{if(!s.free&&TR.mode!=='seri'){TR.mode='seri';trenRender(false)}else if(s.free){}
@@ -190,15 +190,15 @@ function petaInit(world){
   const names=l=>listID(l.map(([n,v])=>`${n} (${num(v)})`));
   const mkStep=(regs,t,hand)=>{const tp=topIn(regs,3),rt=regs.length?regTot(regs):T;
     return {t,sel:regs,stamp:tp.map(x=>x[0]),hand,
-      p:regs.length?`${listID(regs)} mengirim <b>${num(rt)}</b> kunjungan, ${pct(rt,T)} dari total. Terbanyak: ${names(tp)}. ${tp[0][0]} sendirian memberi ${pct(tp[0][1],rt,0)} dari kunjungan pilihan ini.`
-        :`Dari ${new Set(D.negara.map(r=>r.negara)).size} negara dan kawasan asal, tiga yang terbesar: ${names(tp)}. Perhatikan betapa gemuk busur yang menuju Bali dan Jakarta.`}};
+      p:regs.length?`${listID(regs)} mengirim <b>${num(rt)}</b> kunjungan, atau ${pct(rt,T)} dari total, dengan ${names(tp)} sebagai yang terbanyak. ${tp[0][0]} sendirian menyumbang ${pct(tp[0][1],rt,0)} dari kunjungan pada pilihan ini.`
+        :`Dari ${new Set(D.negara.map(r=>r.negara)).size} negara dan kawasan asal, tiga yang terbesar adalah ${names(tp)}, dan kamu bisa melihat betapa gemuk busur yang menuju Bali dan Jakarta.`}};
   const steps=[mkStep([],'Semua rute sekaligus'),
     mkStep(['ASEAN'],'Tetangga dekat','Hanya selemparan batu.'),
     mkStep(['Asia Lainnya'],'Asia, luas dan beragam'),
     mkStep(['Oseania'],'Dari selatan','G\'day!'),
     mkStep(['Eropa'],'Terbang belasan jam','Salam dari Eropa!'),
     mkStep(['Amerika','Timur Tengah','Afrika'],'Tiga kawasan yang lebih jauh'),
-    {t:'Giliranmu memilih',sel:[],stamp:['Indonesia'],p:`Tombol kawasan di atas peta bisa dipilih lebih dari satu. Arahkan kursor ke bendera atau garis untuk melihat angkanya. Titik putus-putus bukan negara, melainkan titik tengah wilayah (misalnya "Eropa Timur Lainnya").`,free:true}];
+    {t:'Giliranmu memilih',sel:[],stamp:['Indonesia'],p:`Tombol kawasan di atas peta bisa dipilih lebih dari satu, dan kursor yang diarahkan ke bendera atau garis akan menampilkan angkanya. Titik putus-putus bukan negara, melainkan titik tengah suatu wilayah (misalnya "Eropa Timur Lainnya").`,free:true}];
   segment('petaChips',[],()=>0,()=>0);
   petaChips();
   scrolly('sc-peta',steps,(i,s)=>{MP.sel=new Set(s.sel);petaChips();petaUpdate(true)});
@@ -267,15 +267,19 @@ function petaUpdate(anim){
   const vis=B.nodes.filter(d=>on(d.reg)).sort((a,b)=>b.v-a.v).slice(0,sel.size?6:4).map(d=>d.negara);
   B.svg.selectAll('.olab').style('opacity',d=>vis.includes(d.negara)?1:0);
   // pesawat di sepanjang busur terbesar
+  if(MP.tm)MP.tm.stop();
   B.gpl.selectAll('*').remove();
   if(!RM){const pick=B.arcs.filter(d=>on(d.kawasan)).slice(0,sel.size?6:5);
-    pick.forEach((d,i)=>{const g=B.gpl.append('g');g.append('path').attr('d','M-7,-2.4 L4,-2.4 L8,-7 L10,-7 L7.6,-2.4 L11,-2.4 L13,0 L11,2.4 L7.6,2.4 L10,7 L8,7 L4,2.4 L-7,2.4 L-9,5 L-10,5 L-9,0 L-10,-5 L-9,-5Z').attr('fill','#FFFAF0').attr('stroke','var(--ink)').attr('stroke-width',1.1).attr('stroke-linejoin','round');
-      g.append('animateMotion').attr('dur',(8+i*1.3)+'s').attr('begin',(-i*1.7)+'s').attr('repeatCount','indefinite').attr('rotate','auto').append('mpath').attr('href','#'+d.id)})}
+    const pl=pick.map((d,i)=>{const p=document.getElementById(d.id);if(!p)return null;
+      const g=B.gpl.append('g');g.append('path').attr('d','M-7,-2.4 L4,-2.4 L8,-7 L10,-7 L7.6,-2.4 L11,-2.4 L13,0 L11,2.4 L7.6,2.4 L10,7 L8,7 L4,2.4 L-7,2.4 L-9,5 L-10,5 L-9,0 L-10,-5 L-9,-5Z').attr('fill','#FFFAF0').attr('stroke','var(--ink)').attr('stroke-width',1.1).attr('stroke-linejoin','round');
+      return {g,p,L:p.getTotalLength(),dur:(8+i*1.3)*1000,off:i*1700}}).filter(Boolean);
+    MP.tm=d3.timer(t=>{pl.forEach(o=>{const f=((t+o.off)%o.dur)/o.dur,s=f*o.L,a=o.p.getPointAtLength(s),b=o.p.getPointAtLength(Math.min(o.L,s+2)),c=o.p.getPointAtLength(Math.max(0,s-2));
+      o.g.attr('transform',`translate(${a.x},${a.y}) rotate(${Math.atan2(b.y-c.y,b.x-c.x)*180/Math.PI})`)})})}
   // daftar peringkat + catatan
   const rows=D.negara.filter(r=>on(r.kawasan)),tot=sortedEntries(group(rows,r=>r.negara,r=>r.nilai)).slice(0,5),mx=tot[0][1],all=sumBy(rows,r=>r.nilai);
   $('#petaList').innerHTML=tot.map(([n,v])=>`<li>${flagImg(n)||'<span class="fl blank"></span>'}<span class="nm">${n}</span><span class="bar"><i style="width:${v/mx*100}%;background:${WARNA[(D.negara.find(r=>r.negara===n)||{}).kawasan]||'#888'}"></i></span><span class="vl">${num(v)}</span></li>`).join('');
   const unm=sumBy(rows.filter(r=>!(PIN[r.pintu]&&PIN[r.pintu].lat!=null)),r=>r.nilai);
-  $('#petaNote').textContent=`Busur hanya untuk pintu yang punya koordinat. ${pct(unm,all,0)} kunjungan pada pilihan ini masuk lewat perbatasan atau "pintu lainnya" dan tidak tergambar. Peta menampilkan sampai 170 arus terbesar.`;
+  $('#petaNote').textContent=`Busur hanya digambar untuk pintu yang punya koordinat, sehingga ${pct(unm,all,0)} kunjungan pada pilihan ini (yang masuk lewat perbatasan atau "pintu lainnya") tidak tergambar. Peta menampilkan sampai 170 arus terbesar.`;
 }
 
 /* =====================================================================
@@ -357,12 +361,12 @@ function sankeyInit(){
   const topNeg=k=>sortedEntries(group(D.negara.filter(r=>r.kawasan===k),r=>r.negara,r=>r.nilai))[0];
   const osN=topNeg('Oseania'),kawTot=Object.fromEntries(kk);
   const steps=[
-    {t:'Semua aliran sekaligus',view:'semua',stamp:['Indonesia'],p:`Total <b>${num(T)}</b> kunjungan wisman 2024 mengalir dari ${D.kawasan.length} kawasan asal ke ${D.pintu.length} kelompok pintu masuk. Lebar pita = jumlah kunjungan. Sekilas saja, beberapa pita sudah jauh lebih gemuk daripada yang lain.`},
-    {t:'Dua gerbang besar',view:'semua',focus:['p:'+a.list[0].id,'p:'+a.list[1].id],stamp:['Indonesia'],p:`${a.list[0].n} menerima <b>${pct(a.list[0].v,T)}</b> dan ${a.list[1].n} ${pct(a.list[1].v,T)}. Berdua mereka menampung ${pct(a.list[0].v+a.list[1].v,T)} dari seluruh kunjungan. Ingat, data ini mencatat tempat masuk, bukan ke mana wisman pergi sesudahnya.`},
-    {t:'Tetangga dekat',view:kk[0][0],stamp:[topNeg(kk[0][0])[0]],p:`${kk[0][0]} adalah kawasan asal terbesar, ${pct(kawTot[kk[0][0]],T)} dari total. ${asean.list[0].n} paling ramai (${pct(asean.list[0].v,asean.tot,0)} dari kawasan ini), disusul ${asean.list[1].n}. Sekitar ${pct(nonAir,asean.tot,0)} tamu ${kk[0][0]} masuk lewat pelabuhan laut atau pos perbatasan, bukan bandara.`,hand:'Dekat, jadi macam-macam jalannya.'},
-    {t:'Jauh di mata, dekat ke Bali',view:'Eropa',stamp:[topNeg('Eropa')[0]],p:`Eropa menyumbang ${pct(kawTot['Eropa'],T)}. Sangat terkonsentrasi: ${eu.list[0].n} menampung <b>${pct(eu.list[0].v,eu.tot,0)}</b> wisman Eropa, ${eu.list[1].n} ${pct(eu.list[1].v,eu.tot,0)}.`,hand:'Salam dari Eropa!'},
-    {t:'Tetangga di selatan',view:'Oseania',stamp:[osN[0]],p:`${osN[0]} sendiri mengirim ${num(osN[1])} kunjungan, ${pct(osN[1],kawTot['Oseania'],0)} dari kawasan Oseania. Pintu terbesarnya ${os.list[0].n} dengan ${pct(os.list[0].v,os.tot,0)}.`},
-    {t:'Giliranmu menjelajah',view:'semua',stamp:['Indonesia'],free:true,p:`Sekarang kendali ada padamu. Tekan tombol kawasan di atas diagram, atau klik nama kawasan di dalam diagram, untuk melihat negara-negaranya. Breadcrumb membawamu kembali ke tampilan awal.`}];
+    {t:'Semua aliran sekaligus',view:'semua',stamp:['Indonesia'],p:`Total <b>${num(T)}</b> kunjungan wisman 2024 mengalir dari ${D.kawasan.length} kawasan asal ke ${D.pintu.length} kelompok pintu masuk, dan lebar pita menunjukkan jumlahnya. Sekilas saja sudah terlihat beberapa pita jauh lebih gemuk daripada yang lain.`},
+    {t:'Dua gerbang besar',view:'semua',focus:['p:'+a.list[0].id,'p:'+a.list[1].id],stamp:['Indonesia'],p:`${a.list[0].n} menerima <b>${pct(a.list[0].v,T)}</b> dan ${a.list[1].n} ${pct(a.list[1].v,T)}, sehingga berdua mereka menampung ${pct(a.list[0].v+a.list[1].v,T)} dari seluruh kunjungan. Tapi ingat, data ini hanya mencatat tempat wisman masuk, bukan ke mana mereka pergi sesudahnya.`},
+    {t:'Tetangga dekat',view:kk[0][0],stamp:[topNeg(kk[0][0])[0]],p:`${kk[0][0]} adalah kawasan asal terbesar dengan ${pct(kawTot[kk[0][0]],T)} dari total, dan ${asean.list[0].n} paling ramai (${pct(asean.list[0].v,asean.tot,0)} dari kawasan ini), disusul ${asean.list[1].n}. Sekitar ${pct(nonAir,asean.tot,0)} tamu ${kk[0][0]} masuk lewat pelabuhan laut atau pos perbatasan, bukan bandara.`,hand:'Dekat, jadi macam-macam jalannya.'},
+    {t:'Jauh di mata, dekat ke Bali',view:'Eropa',stamp:[topNeg('Eropa')[0]],p:`Eropa menyumbang ${pct(kawTot['Eropa'],T)} dan sangat terkonsentrasi: ${eu.list[0].n} menampung <b>${pct(eu.list[0].v,eu.tot,0)}</b> wisman Eropa, disusul ${eu.list[1].n} dengan ${pct(eu.list[1].v,eu.tot,0)}.`,hand:'Salam dari Eropa!'},
+    {t:'Tetangga di selatan',view:'Oseania',stamp:[osN[0]],p:`${osN[0]} sendiri mengirim ${num(osN[1])} kunjungan, atau ${pct(osN[1],kawTot['Oseania'],0)} dari kawasan Oseania, dan pintu terbesarnya adalah ${os.list[0].n} dengan ${pct(os.list[0].v,os.tot,0)}.`},
+    {t:'Giliranmu menjelajah',view:'semua',stamp:['Indonesia'],free:true,p:`Sekarang kendali ada padamu: tekan tombol kawasan di atas diagram, atau klik nama kawasan di dalam diagram, untuk melihat negara-negaranya, lalu pakai breadcrumb untuk kembali ke tampilan awal.`}];
   skCrumb();
   scrolly('sc-sankey',steps,(i,s)=>skShow(s.view,true,s.focus||null));
   skRender(false);watch($('#sankey'),()=>skRender(false));
@@ -410,11 +414,11 @@ function odInit(){
   const nei=['batam_kepri','tanjung_uban_kepri','perbatasan_laut','perbatasan_darat'],aseanNei=nei.reduce((a,p)=>a+sh('ASEAN',p),0);
   const euNg=sh('Eropa',ng),osNg=sh('Oseania',ng);
   const steps=[
-    {t:'Cara membaca tabel ini',mode:'jml',rows:[],cols:[],p:`Tiap baris adalah kawasan asal, tiap kolom adalah pintu masuk. Sel yang terang berarti banyak kunjungan. Warna memakai skala akar kuadrat, supaya sel kecil tetap kelihatan.`},
-    {t:'Satu kolom menyala',mode:'jml',rows:[],cols:[ng],p:`Kolom ${nm(ng)} paling terang. Dari ${K.length} kawasan asal, <b>${cNg}</b> menjadikannya pintu terbesar. Jangan heran kalau pita Sankey tadi tampak berkumpul di sana.`},
-    {t:'Tetangga punya jalan sendiri',mode:'jml',rows:['ASEAN'],cols:[],p:`Baris ASEAN tampil beda. Sekitar <b>${fmt1.format(aseanNei*100)}%</b> tamunya masuk lewat Batam, Tanjung Uban, serta perbatasan laut dan darat. Kawasan lain hampir tidak memakai jalur itu.`,stamp:['Malaysia','Singapura']},
-    {t:'Jakarta, gerbang kedua',mode:'jml',rows:[],cols:[sh2],p:`${nm(sh2)} menampung tamu dari banyak kawasan. Yang paling bergantung padanya adalah ${bestSH[0]}: ${fmt1.format(bestSH[1]*100)}% kunjungan kawasan itu lewat sini.`},
-    {t:'Dari jumlah ke pangsa',mode:'pangsa',rows:['Eropa','Oseania'],cols:[],p:`Dalam pangsa per kawasan, <b>${fmt1.format(euNg*100)}%</b> wisman Eropa masuk lewat ${nm(ng)}, begitu juga ${fmt1.format(osNg*100)}% wisman Oseania. Dengan pangsa, kawasan kecil dan besar bisa dibandingkan setara.`,stamp:['Australia','Belanda']},
+    {t:'Cara membaca tabel ini',mode:'jml',rows:[],cols:[],p:`Tiap baris adalah kawasan asal dan tiap kolom adalah pintu masuk, jadi sel yang terang berarti banyak kunjungan. Warnanya memakai skala akar kuadrat supaya sel yang kecil tetap terlihat.`},
+    {t:'Satu kolom menyala',mode:'jml',rows:[],cols:[ng],p:`Kolom ${nm(ng)} paling terang: dari ${K.length} kawasan asal, <b>${cNg}</b> menjadikannya pintu terbesar. Wajar kalau pita Sankey tadi tampak berkumpul di sana.`},
+    {t:'Tetangga punya jalan sendiri',mode:'jml',rows:['ASEAN'],cols:[],p:`Baris ASEAN tampil beda, karena sekitar <b>${fmt1.format(aseanNei*100)}%</b> tamunya masuk lewat Batam, Tanjung Uban, serta perbatasan laut dan darat, jalur yang hampir tidak dipakai kawasan lain.`,stamp:['Malaysia','Singapura']},
+    {t:'Jakarta, gerbang kedua',mode:'jml',rows:[],cols:[sh2],p:`${nm(sh2)} menampung tamu dari banyak kawasan, dan yang paling bergantung padanya adalah ${bestSH[0]}, dengan ${fmt1.format(bestSH[1]*100)}% kunjungan kawasan itu lewat sini.`},
+    {t:'Dari jumlah ke pangsa',mode:'pangsa',rows:['Eropa','Oseania'],cols:[],p:`Kalau dilihat dari pangsa per kawasan, <b>${fmt1.format(euNg*100)}%</b> wisman Eropa masuk lewat ${nm(ng)}, begitu pula ${fmt1.format(osNg*100)}% wisman Oseania. Dengan pangsa, kawasan kecil dan besar bisa dibandingkan secara setara.`,stamp:['Australia','Belanda']},
     {t:'Giliranmu menjelajah',mode:'jml',rows:[],cols:[],free:true,p:`Arahkan kursor ke sel mana pun untuk melihat angkanya, dan ganti ukuran tabel dengan tombol di atas.`}];
   odSeg();odRender(false);watch($('#odChart'),()=>odRender(false));
   scrolly('sc-od',steps,(i,s)=>{OD.mode=s.mode;OD.rows=s.rows;OD.cols=s.cols;odSeg();odRender(true)});
@@ -486,11 +490,11 @@ function hierInit(d){
   const bali=share(d.provinsi.indexOf('Bali')),nas=iT/tot*100;
   const iBy=wilTot.map(([w])=>[w,sumBy(hProvIdx(w).flatMap(i=>d.data.filter(r=>r[0]===i&&r[1]===I)),r=>r[3])]).sort((a,b)=>b[1]-a[1]);
   const steps=[
-    {t:'Satu peta, 38 provinsi',u:'wilayah',path:[],stamp:['Indonesia'],p:`Luas tiap kotak adalah nilai PDRB (harga konstan 2024). ${wilTot[0][0]} paling lebar: <b>${pct(wilTot[0][1],sumBy(wilTot,x=>x[1]),0)}</b> dari jumlah 38 provinsi. Warnanya menunjukkan seberapa cepat ekonomi tumbuh sepanjang 2023 ke 2024.`},
-    {t:'Zoom ke Bali & Nusa Tenggara',u:'wilayah',path:['Bali & Nusa Tenggara'],stamp:['Indonesia'],p:`Wilayah ini menyumbang ${pct(regW[1],sumBy(wilTot,x=>x[1]))} dari jumlah PDRB. Di dalamnya ${balProv[0][0]} paling besar (${num(balProv[0][1]/1e3)} triliun), disusul ${balProv[1][0]}.`},
-    {t:'Bali, kamar dan meja makan',u:'wilayah',path:['Bali & Nusa Tenggara','Bali'],stamp:['Indonesia'],p:`Di Bali, akomodasi dan makan minum menyumbang <b>${fmt1.format(bali)}%</b> PDRB provinsinya, ${bali>nas?'di atas':'di bawah'} rata-rata 38 provinsi (${fmt1.format(nas)}%). Garis tepi oranye menandai sektornya.`,hand:'Pintu masuknya Ngurah Rai, kamarnya di sini.'},
-    {t:'Ganti sudut pandang',u:'sektor',path:[Ip],stamp:['Indonesia'],p:`Sekarang kita mulai dari sektornya. Akomodasi dan makan minum bernilai ${fmt1.format(iT/1e3)} triliun, ${fmt1.format(nas)}% dari jumlah PDRB. Wilayah terbesar untuk sektor ini: ${iBy[0][0]} (${pct(iBy[0][1],iT,0)}). Provinsi dengan pangsa sektor tertinggi: ${provShare.slice(0,3).map(s=>`${s.n} (${fmt1.format(s.v)}%)`).join(', ')}.`},
-    {t:'Giliranmu menjelajah',u:'wilayah',path:[],free:true,stamp:['Indonesia'],p:`Klik kotak mana pun untuk masuk lebih dalam, pakai breadcrumb untuk kembali, dan ganti urutan hierarki dengan tombol di atas. Tampilan icicle di bawah mengikuti pilihanmu.`}];
+    {t:'Satu peta, 38 provinsi',u:'wilayah',path:[],stamp:['Indonesia'],p:`Luas tiap kotak menunjukkan nilai PDRB (harga konstan 2024), dan ${wilTot[0][0]} paling lebar dengan <b>${pct(wilTot[0][1],sumBy(wilTot,x=>x[1]),0)}</b> dari jumlah 38 provinsi. Warnanya menunjukkan seberapa cepat ekonomi tumbuh dari 2023 ke 2024.`},
+    {t:'Zoom ke Bali & Nusa Tenggara',u:'wilayah',path:['Bali & Nusa Tenggara'],stamp:['Indonesia'],p:`Wilayah ini menyumbang ${pct(regW[1],sumBy(wilTot,x=>x[1]))} dari jumlah PDRB, dan di dalamnya ${balProv[0][0]} paling besar (${num(balProv[0][1]/1e3)} triliun), disusul ${balProv[1][0]}.`},
+    {t:'Bali, kamar dan meja makan',u:'wilayah',path:['Bali & Nusa Tenggara','Bali'],stamp:['Indonesia'],p:`Di Bali, akomodasi dan makan minum menyumbang <b>${fmt1.format(bali)}%</b> PDRB provinsinya, ${bali>nas?'di atas':'di bawah'} rata-rata 38 provinsi (${fmt1.format(nas)}%). Sektor ini ditandai garis tepi oranye.`,hand:'Pintu masuknya Ngurah Rai, kamarnya di sini.'},
+    {t:'Ganti sudut pandang',u:'sektor',path:[Ip],stamp:['Indonesia'],p:`Sekarang kita mulai dari sektornya: akomodasi dan makan minum bernilai ${fmt1.format(iT/1e3)} triliun atau ${fmt1.format(nas)}% dari jumlah PDRB, dengan wilayah terbesar ${iBy[0][0]} (${pct(iBy[0][1],iT,0)}). Provinsi dengan pangsa sektor tertinggi adalah ${provShare.slice(0,3).map(s=>`${s.n} (${fmt1.format(s.v)}%)`).join(', ')}.`},
+    {t:'Giliranmu menjelajah',u:'wilayah',path:[],free:true,stamp:['Indonesia'],p:`Klik kotak mana pun untuk masuk lebih dalam, pakai breadcrumb untuk kembali, dan ganti urutan hierarki dengan tombol di atas. Tampilan icicle di bawah akan mengikuti pilihanmu.`}];
   hRender();watch($('#treemap'),hRender);watch($('#icicle'),hRender);
   scrolly('sc-hier',steps,(i,s)=>{HU=s.u;HPATH=s.path;hRender()});
 }
@@ -620,30 +624,31 @@ function teksInit(frek,khas,tren,bigram,meta){
   const rank=(id,w)=>frek[id].findIndex(r=>r.kata===w)+1;
   const first=(w)=>{const v=tren.kata[w];const i=v.findIndex(x=>x>0);return i<0?null:tren.bulan[i]};
   const last=(w)=>{const v=tren.kata[w];let i=-1;v.forEach((x,j)=>{if(x>0)i=j});return i<0?null:tren.bulan[i]};
-  const bl=ym=>ym?`${MONF[+ym.slice(5)-1]} ${ym.slice(0,4)}`:'-';
+  const bl=ym=>ym?`${MONF[+ym.slice(5)-1]} ${ym.slice(0,4)}`:'-',nxt=ym=>{if(!ym)return null;const i=tren.bulan.indexOf(ym);return tren.bulan[i+1]||null};
   const pv=tren.kata['penumpang'].filter(x=>x>0),pMin=d3.min(pv),pMax=d3.max(pv);
   const khasPer=k=>khas[k].slice(0,4).map(r=>`"${r.kata}"`);
   const kp=khas['3_pemulihan'].find(r=>r.kata==='perjalanan');
   const steps=[
-    {t:'Sebelum pandemi',tp:'1_pra_pandemi',tm:'frek',p:`Di ${nd('1_pra_pandemi')} BRS pra-pandemi, lima kata paling sering: ${listID(frek['1_pra_pandemi'].slice(0,5).map(r=>`"${r.kata}"`))}. "Penumpang" berada di peringkat ${rank('1_pra_pandemi','penumpang')}, tanda laporan masih memuat angkutan.`,stamp:['Indonesia']},
-    {t:'Saat pandemi',tp:'2_pandemi',tm:'khas',p:`Kata paling khas pandemi: ${listID(khasPer('2_pandemi'))}. Kosakatanya condong ke bandara dan angkutan udara, kemungkinan karena laporan saat itu masih mencampur data transportasi.`},
-    {t:'Masa pemulihan',tp:'3_pemulihan',tm:'khas',p:`Kata paling khas pemulihan: ${listID(khasPer('3_pemulihan'))}. "Perjalanan" muncul ${fmt.format(kp.per10rb)} kali per 10 ribu kata, sementara di periode lain nyaris nol (${fmt1.format(kp.per10rb_lain)}). "Penumpang" justru tidak lagi masuk daftar.`,hand:'Kamus laporannya ganti halaman.'},
-    {t:'Dalam bentuk awan',tp:'3_pemulihan',tm:'awan',p:`Awan kata periode pemulihan: makin besar tulisan, makin sering kata itu dipakai. Ganti periode atau ukuran dengan tombol di atas grafik.`},
-    {t:'Giliranmu menjelajah',tp:'3_pemulihan',tm:'frek',free:true,p:`Semua tombol di atas grafik tetap bisa dipakai. Arahkan kursor ke batang untuk melihat jumlah dokumen yang memuat kata itu.`}];
+    {t:'Sebelum pandemi',tp:'1_pra_pandemi',tm:'frek',p:`Di ${nd('1_pra_pandemi')} BRS pra-pandemi, lima kata yang paling sering muncul adalah ${listID(frek['1_pra_pandemi'].slice(0,5).map(r=>`"${r.kata}"`))}, dan "penumpang" berada di peringkat ${rank('1_pra_pandemi','penumpang')}, tanda laporannya waktu itu masih memuat angkutan.`,stamp:['Indonesia']},
+    {t:'Saat pandemi',tp:'2_pandemi',tm:'khas',p:`Kata paling khas masa pandemi adalah ${listID(khasPer('2_pandemi'))}. Kosakatanya condong ke bandara dan angkutan udara karena BRS waktu itu masih mencampur data pariwisata dengan transportasi.`},
+    {t:'Masa pemulihan',tp:'3_pemulihan',tm:'khas',p:`Kata paling khas masa pemulihan adalah ${listID(khasPer('3_pemulihan'))}. "Perjalanan" muncul ${fmt.format(kp.per10rb)} kali per 10 ribu kata, padahal di periode lain nyaris nol (${fmt1.format(kp.per10rb_lain)}), sementara "penumpang" tidak lagi masuk daftar.`,hand:'Kamus laporannya ganti halaman.'},
+    {t:'Dalam bentuk awan',tp:'3_pemulihan',tm:'awan',p:`Dalam awan kata masa pemulihan ini, makin besar tulisannya, makin sering kata itu dipakai, dan kamu bisa mengganti periode atau ukuran dengan tombol di atas grafik.`},
+    {t:'Giliranmu menjelajah',tp:'3_pemulihan',tm:'frek',free:true,p:`Semua tombol di atas grafik tetap bisa dipakai, dan kursor yang diarahkan ke batang akan menampilkan jumlah dokumen yang memuat kata itu.`}];
   teksSegs();frekRender(false);watch($('#frekChart'),()=>frekRender(false));
   scrolly('sc-frek',steps,(i,s)=>{TP=s.tp;TM=s.tm;teksSegs();frekRender(true);bigramRender()});
   const ks=[
-    {t:'Kata yang tiba-tiba hilang',w:['penumpang'],p:`"Penumpang" dipakai konsisten sejak 2015, antara ${fmt.format(pMin)} dan ${fmt.format(pMax)} kali per 10 ribu kata. Kemunculan terakhirnya pada ${bl(last('penumpang'))}, setelah itu nol.`},
-    {t:'Kata yang datang menggantikan',w:['penumpang','perjalanan'],p:`"Perjalanan" mulai muncul pada ${bl(first('perjalanan'))}, tepat ketika "penumpang" berpamitan. Dugaan kami, struktur BRS berubah, bukan sekadar kebiasaan menulis.`},
-    {t:'Wisata nusantara ikut masuk',w:['perjalanan','wisnus','wisnas'],p:`"Wisnus" pertama muncul pada ${bl(first('wisnus'))} dan "wisnas" pada ${bl(first('wisnas'))}. Laporan tampaknya mulai membahas perjalanan penduduk Indonesia sendiri.`},
-    {t:'Giliranmu mencari kata',w:['wisman','wisatawan'],free:true,p:`Ketik kata apa saja (maksimal empat, pisahkan dengan koma), atau pakai tombol pilihan cepat. Hanya kata-kata teratas yang tersedia untuk dicari.`}];
+    {t:'Kata yang tiba-tiba hilang',w:['penumpang'],p:`"Penumpang" dipakai konsisten sejak 2015, antara ${fmt.format(pMin)} dan ${fmt.format(pMax)} kali per 10 ribu kata, lalu terakhir muncul pada ${bl(last('penumpang'))} dan setelah itu nol.`},
+    {t:'Format laporannya berubah',w:['penumpang','perjalanan'],p:`Penyebabnya ada di judul BRS: sampai data ${bl(last('penumpang'))}, judulnya masih memuat pariwisata sekaligus penumpang angkutan, tetapi sejak data ${bl(nxt(last('penumpang')))} isinya hanya membahas pariwisata. Jadi hilangnya "penumpang" menandakan format laporan berubah, bukan kebiasaan menulis. Sementara itu "perjalanan" mulai muncul pada ${bl(first('perjalanan'))}.`},
+    {t:'Wisata nusantara ikut masuk',w:['perjalanan','wisnus','wisnas'],p:`"Wisnus" pertama muncul pada ${bl(first('wisnus'))}, bertepatan dengan BRS yang mulai memuat perjalanan wisatawan nusantara, dan "wisnas" menyusul pada ${bl(first('wisnas'))}. Artinya laporan mulai membahas perjalanan penduduk Indonesia sendiri.`},
+    {t:'Giliranmu mencari kata',w:['wisman','wisatawan'],free:true,p:`Ketik kata apa saja (maksimal empat, pisahkan dengan koma) atau pakai tombol pilihan cepat, dan perlu diingat hanya kata-kata teratas yang tersedia untuk dicari.`}];
   setW(ks[0].w);watch($('#trenKata'),kataRender);
   scrolly('sc-kata',ks,(i,s)=>setW(s.w));
   const topL=id=>[...bigram[id].links].sort((a,b)=>b.value-a.value)[0];
   const vv=(id,a,b)=>{const l=bigram[id].links.find(l=>(l.source.id||l.source)===a&&(l.target.id||l.target)===b);return l?l.value:0};
   const bs=PER.map(([id,l],i)=>{const t=topL(id);
-    const extra=id==='3_pemulihan'?` Pasangan "kunjungan wisman" turun ke ${fmt.format(vv(id,'kunjungan','wisman'))}: perhotelan kini dibahas lebih sering daripada kunjungan wisman.`:'';
-    return {t:l,tp:id,p:`Pasangan paling sering: <b>"${t.source} ${t.target}"</b> (${fmt.format(t.value)} kali).${extra}`}});
+    const rk=[...bigram[id].links].sort((a,b)=>b.value-a.value).findIndex(l=>l.source==='kunjungan'&&l.target==='wisman')+1;
+    const extra=id==='3_pemulihan'&&rk>1?` Pasangan "kunjungan wisman" tergeser ke peringkat ${rk} (${fmt.format(vv(id,'kunjungan','wisman'))} kali), karena perhotelan kini dibahas lebih sering daripada kunjungan wisman.`:'';
+    return {t:l,tp:id,p:`Pasangan yang paling sering muncul adalah <b>"${t.source} ${t.target}"</b> (${fmt.format(t.value)} kali).${extra}`}});
   bs.push({t:'Giliranmu menjelajah',tp:TP,free:true,p:`Ganti periode dengan tombol di atas jaringan, lalu arahkan kursor ke titik atau garis untuk melihat pasangan katanya.`});
   bigramRender();watch($('#bigramChart'),bigramRender);
   scrolly('sc-bigram',bs,(i,s)=>{if(!s.free)TP=s.tp;teksSegs();frekRender(false);bigramRender()});
@@ -670,13 +675,13 @@ function kesimpulanInit(){
   const K=TK.tren,fl=(w,first)=>{const v=K.kata[w];if(!v)return null;const i=first?v.findIndex(x=>x>0):v.map(x=>x>0).lastIndexOf(true);return i<0?null:K.bulan[i]};
   const topPair=id=>[...TK.bigram[id].links].sort((a,b)=>b.value-a.value)[0],p1=topPair('1_pra_pandemi'),p3=topPair('3_pemulihan');
   const t19=t[2019],t20=t[2020],t24=t[2024],t25=t[2025];
-  $('#kesIntro').innerHTML=`Kita mulai dari satu angka: <b>${pct(air.total,T,0)}</b> kunjungan wisman 2024 masuk lewat ${air.nama_pendek}. Setelah mengikuti arusnya dari tiket, gerbang, rupiah, sampai kata-kata BPS, kesimpulannya begini: data pintu masuk memberi tahu <em>di mana wisman tiba</em>, bukan ke mana mereka pergi.`;
+  $('#kesIntro').innerHTML=`Kita mulai dari satu angka: <b>${pct(air.total,T,0)}</b> kunjungan wisman 2024 masuk lewat ${air.nama_pendek}. Setelah mengikuti arusnya dari tiket, gerbang, rupiah, sampai kata-kata BPS, kesimpulannya adalah bahwa data pintu masuk memberi tahu <em>di mana wisman tiba</em>, bukan ke mana mereka pergi.`;
   const cards=[
-    {t:'Pulih, tetapi belum penuh',d:'Naik-Turun',h:'naikturun',p:`Dari ${juta(t19)} kunjungan pada 2019, angkanya jatuh ke ${juta(t20)} pada 2020 (turun ${pct(t19-t20,t19,0)}). Tahun 2024 mencapai ${juta(t24)} (${pct(t24,t19,0)} dari 2019) dan 2025 ${juta(t25)} (${pct(t25,t19,0)}). ${t25<t19?'Pemulihannya hampir penuh, tetapi belum melampaui masa sebelum pandemi.':'Angkanya sudah melampaui masa sebelum pandemi.'}`},
+    {t:'Pulih, tetapi belum penuh',d:'Naik-Turun',h:'naikturun',p:`Dari ${juta(t19)} kunjungan pada 2019, angkanya jatuh ke ${juta(t20)} pada 2020 (turun ${pct(t19-t20,t19,0)}), lalu naik lagi hingga ${juta(t24)} pada 2024 (${pct(t24,t19,0)} dari 2019) dan ${juta(t25)} pada 2025 (${pct(t25,t19,0)}). ${t25<t19?'Pemulihannya hampir penuh, tetapi belum melampaui masa sebelum pandemi.':'Angkanya sudah melampaui masa sebelum pandemi.'}`},
     {t:'Jarak ikut menentukan jenis pintu',d:'Asal Tamu',h:'asal',p:`ASEAN menyumbang ${pct(as.total,T,0)} kunjungan, dan <b>${pct(asNon,as.total,0)}</b> di antaranya masuk lewat pelabuhan laut atau pos lintas batas, bukan bandara. Sebaliknya, wisman Eropa, Amerika, dan Oseania setidaknya <b>${pct(farAir,farTot,0)}</b> mendarat di empat bandara besar.`},
-    {t:'Gerbangnya sedikit, tamunya banyak',d:'Pintu Gerbang',h:'gerbang',p:`${listID(top3.map(p=>p.nama_pendek))} menampung <b>${pct(top3S,T,0)}</b> kunjungan. Pola tiap kawasan berbeda: ${nm(hi.pin)} menerima ${pct(hi.s,1,0)} wisman ${hi.id}, sedangkan wisman ${lo.id} paling tersebar, gerbang terbesarnya, ${nm(lo.pin)}, hanya ${pct(lo.s,1,0)}.`},
-    {t:'Gerbang dan kamar di provinsi yang sama',d:'Rupiah',h:'rupiah',p:`Akomodasi dan makan minum hanya ${fmt1.format(natS)}% dari jumlah PDRB 38 provinsi, tetapi di ${rk[0].n} porsinya ${fmt1.format(rk[0].v)}% dan di ${rk[1].n} ${fmt1.format(rk[1].v)}%. Tabel di bawah membandingkan gerbang terbesar dengan pangsa sektor ini di provinsinya.`},
-    {t:'Laporan resminya ikut bergeser',d:'Kata BPS',h:'kata',p:`Pasangan kata teratas BRS pariwisata bergeser dari "${p1.source} ${p1.target}" (${fmt.format(p1.value)}) sebelum pandemi menjadi "${p3.source} ${p3.target}" (${fmt.format(p3.value)}) pada masa pemulihan. "Penumpang" terakhir muncul pada ${fl('penumpang')?bl(fl('penumpang')):'-'}, "perjalanan" mulai ${fl('perjalanan',true)?bl(fl('perjalanan',true)):'-'}. Dugaan kami, format laporan berubah, bukan hanya pilihan kata.`}];
+    {t:'Gerbangnya sedikit, tamunya banyak',d:'Pintu Gerbang',h:'gerbang',p:`${listID(top3.map(p=>p.nama_pendek))} menampung <b>${pct(top3S,T,0)}</b> kunjungan, tetapi pola tiap kawasan berbeda: ${nm(hi.pin)} menerima ${pct(hi.s,1,0)} wisman ${hi.id}, sedangkan wisman ${lo.id} paling tersebar dan gerbang terbesarnya, ${nm(lo.pin)}, hanya menerima ${pct(lo.s,1,0)}.`},
+    {t:'Gerbang dan kamar di provinsi yang sama',d:'Rupiah',h:'rupiah',p:`Akomodasi dan makan minum hanya ${fmt1.format(natS)}% dari jumlah PDRB 38 provinsi, tetapi di ${rk[0].n} porsinya ${fmt1.format(rk[0].v)}% dan di ${rk[1].n} ${fmt1.format(rk[1].v)}%. Tabel di bawah membandingkan gerbang terbesar dengan pangsa sektor ini di provinsinya masing-masing.`},
+    {t:'Laporan resminya ikut bergeser',d:'Kata BPS',h:'kata',p:`Pasangan kata teratas BRS pariwisata bergeser dari "${p1.source} ${p1.target}" (${fmt.format(p1.value)}) sebelum pandemi menjadi "${p3.source} ${p3.target}" (${fmt.format(p3.value)}) pada masa pemulihan. "Penumpang" terakhir muncul pada ${fl('penumpang')?bl(fl('penumpang')):'-'} karena sejak bulan berikutnya BRS ini hanya membahas pariwisata, sedangkan "perjalanan" mulai muncul pada ${fl('perjalanan',true)?bl(fl('perjalanan',true)):'-'}.`}];
   $('#kesGrid').innerHTML=cards.map((c,i)=>`<article class="kes-card"><span class="pc-no">Temuan ${i+1} dari ${cards.length}</span><h3>${c.t}</h3><p>${c.p}</p><a class="dari" href="#${c.h}">Lihat di bagian ${c.d} →</a></article>`).join('');
   $('#kesQuote').innerHTML='Pintu masuk menjawab <em>di mana wisman tiba</em>, bukan <em>ke mana mereka pergi</em>. Gerbang yang ramai belum tentu destinasi yang ramai.';
   /* gerbang terbesar dibandingkan dengan pangsa PDRB akomodasi dan makan minum provinsinya */
@@ -694,7 +699,7 @@ function kesimpulanInit(){
     <tr><td>Rupiah</td><td>PDRB 2023 dan 2024 (ukuran 2024, warna pertumbuhan 2023 ke 2024)</td></tr>
     <tr><td>Kata BPS</td><td>${bl(TK.meta.bulan_awal)} sampai ${bl(TK.meta.bulan_akhir)} (${TK.meta.n_dokumen} BRS)</td></tr></tbody></table>
     <ul>
-      <li>Potret gerbang dan asal tamu memakai satu tahun, yaitu 2024, yang juga tahun terbaru pada data PDRB di sini. Tahun 2025 (${juta(t25)}) hanya hadir di tren, jadi gerbang dan asal tamu 2025 belum dibandingkan.</li>
+      <li>Potret gerbang dan asal tamu memakai satu tahun, yaitu 2024, yang juga tahun terbaru pada data PDRB di sini, sedangkan tahun 2025 (${juta(t25)}) hanya hadir di tren sehingga gerbang dan asal tamu 2025 belum dibandingkan.</li>
       <li>Data mencatat tempat wisman tiba, bukan tujuan akhir atau rute sesudahnya.</li>
       <li>${pct(unm,T,0)} kunjungan (${juta(unm)}) masuk lewat perbatasan laut, perbatasan darat, atau pintu lainnya tanpa lokasi rinci, sehingga tidak tergambar di peta.</li>
       <li>Total 2024 pada diagram aliran (${num(T)}) berbeda ${num(diff)} dari jumlah tabel bulanan (${num(t24)}). Sebabnya belum dikonfirmasi.</li>

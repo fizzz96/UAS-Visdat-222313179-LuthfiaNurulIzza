@@ -9,6 +9,8 @@ const PINTU_C='#4a5563';
 const fmt=new Intl.NumberFormat('id-ID'),fmt1=new Intl.NumberFormat('id-ID',{maximumFractionDigits:1});
 const $=s=>document.querySelector(s);
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* MOTION: animasi pesawat (dekoratif). Dengan pengaturan "kurangi animasi", pesawat tampil diam, dan pembaca bisa menyalakannya sendiri lewat tombol. */
+let MOTION=!RM;
 const num=n=>fmt.format(Math.round(n));
 const pct=(a,b,d=1)=>new Intl.NumberFormat('id-ID',{maximumFractionDigits:d}).format(a/b*100)+'%';
 const juta=n=>fmt1.format(n/1e6)+' juta',ribu=n=>fmt1.format(n/1e3)+' ribu';
@@ -83,7 +85,17 @@ function hero(){
   $('#stubAsal').textContent=new Set(D.negara.map(r=>r.negara)).size+' negara dan kawasan';
   const tot=group(D.negara,r=>r.negara,r=>r.nilai);
   $('#heroFlags').innerHTML=sortedEntries(tot).filter(([n])=>ISO[n]).slice(0,10).map(([n])=>flagImg(n)).join('');
-  if(RM)document.querySelectorAll('svg').forEach(s=>s.pauseAnimations&&s.pauseAnimations());
+  heroPlane();
+  const mb=$('#motionBox');
+  if(RM&&mb){mb.hidden=false;const bt=mb.querySelector('button');
+    bt.onclick=()=>{MOTION=!MOTION;bt.textContent=MOTION?'Matikan animasi pesawat':'Nyalakan animasi pesawat';bt.setAttribute('aria-pressed',MOTION);heroPlane();if(MP.built)petaUpdate(false)}}
+}
+/* Pesawat hero: bergerak, atau diam di tengah jalur (terlihat penuh) saat animasi dikurangi. */
+function heroPlane(){
+  document.querySelectorAll('.plane-layer').forEach(sv=>{
+    if(!sv.pauseAnimations)return;
+    if(MOTION){sv.unpauseAnimations()}else{sv.setCurrentTime(5.5);sv.pauseAnimations()}
+  });
 }
 
 /* =====================================================================
@@ -217,11 +229,13 @@ function petaRender(){
   const mapEl=document.createElement('div');mapEl.className='map';const list=document.createElement('ol');list.className='toplist';list.id='petaList';host.append(mapEl,list);
   const W=mapEl.clientWidth,H=mapEl.clientHeight;if(!W||!H)return;
   const mob=W<560,P=PIN;
-  const proj=d3.geoNaturalEarth1().rotate([-60,0]);
-  proj.fitWidth(W-8,{type:'Sphere'});
-  const yTop=proj([60,80])[1],yBot=proj([60,-56])[1];
-  const hMap=yBot-yTop;if(hMap>H-8){proj.scale(proj.scale()*(H-8)/hMap)}
-  {const a=proj([60,80])[1],b=proj([60,-56])[1],t=proj.translate();proj.translate([W/2,t[1]+((H-(b-a))/2-a)])}
+  const proj=d3.geoNaturalEarth1().rotate([-40,0]);
+  proj.fitWidth(W,{type:'Sphere'});
+  // perbesar peta ke sebaran titik (negara asal + pintu), bukan seluruh bola dunia, supaya memenuhi panggung
+  {const pad=mob?8:16,ll=[...Object.values(COORD).map(c=>[c.lon,c.lat]),...D.pintu.filter(p=>p.lat!=null).map(p=>[p.lon,p.lat])],
+     xy=ll.map(c=>proj(c)),x0=d3.min(xy,d=>d[0]),x1=d3.max(xy,d=>d[0]),y0=d3.min(xy,d=>d[1]),y1=d3.max(xy,d=>d[1]),
+     k=Math.min((W-2*pad)/(x1-x0),(H-2*pad-18)/(y1-y0)),sc=proj.scale(),tr0=proj.translate();
+   proj.scale(sc*k).translate([W/2-((x0+x1)/2-tr0[0])*k,H/2-((y0+y1)/2-tr0[1])*k]);}
   const path=d3.geoPath(proj);
   const svg=d3.select(mapEl).append('svg').attr('viewBox',[0,0,W,H]).attr('role','img').attr('aria-label','Peta dunia dengan busur dari negara asal wisatawan ke pintu masuk Indonesia');
   svg.append('path').datum(MP.world).attr('d',path).attr('fill','#E7DCC4').attr('stroke','#fff').attr('stroke-width',.6);
@@ -249,7 +263,7 @@ function petaRender(){
   const lab=[['ngurah_rai_bali','Ngurah Rai',8,16],['soekarno_hatta_banten','Soekarno-Hatta',-6,-9],['batam_kepri','Batam',-8,-10]];
   lab.forEach(([id,t,dx,dy])=>{const q=pts(id);if(q)svg.append('text').attr('x',q[0]+dx).attr('y',q[1]+dy).attr('text-anchor',dx<0?'end':'start').attr('font-size',mob?9.5:11).style('font-weight',700).style('paint-order','stroke').style('stroke','#fff').attr('stroke-width',3).text(t)});
   // pesawat dan marker asal
-  const gpl=svg.append('g').attr('class','planes');
+  const gpl=svg.append('g').attr('class','planes').attr('pointer-events','none');
   const gm=svg.append('g');
   const clipId='cflag';svg.append('defs').append('clipPath').attr('id',clipId).append('circle').attr('r',R);
   const mg=gm.selectAll('g.o').data(nodes).join('g').attr('class','o').attr('transform',d=>`translate(${d.x},${d.y})`)
@@ -259,6 +273,7 @@ function petaRender(){
       g.append('circle').attr('r',R).attr('fill','none').attr('stroke','var(--ink)').attr('stroke-opacity',.55).attr('stroke-width',1.2)}
     else g.append('circle').attr('r',R-1).attr('fill','var(--paper)').attr('stroke',WARNA[d.reg]).attr('stroke-width',2).attr('stroke-dasharray','2.5 2.5')});
   const lb=gm.selectAll('text').data(nodes).join('text').attr('class','olab').attr('x',d=>d.x).attr('y',d=>d.y-R-4).attr('text-anchor','middle').attr('font-size',mob?9.5:11).style('font-weight',700).style('paint-order','stroke').style('stroke','#fff').attr('stroke-width',3.2).text(d=>d.negara).style('pointer-events','none');
+  gpl.raise();
   MP.built={svg,arcs,nodes,gpl,R,mob};
   petaUpdate(false);
 }
@@ -270,15 +285,21 @@ function petaUpdate(anim){
   // label hanya untuk pilihan terbesar
   const vis=B.nodes.filter(d=>on(d.reg)).sort((a,b)=>b.v-a.v).slice(0,3).map(d=>d.negara);
   B.svg.selectAll('.olab').style('opacity',d=>vis.includes(d.negara)?1:0);
-  // pesawat di sepanjang busur terbesar
-  if(MP.tm)MP.tm.stop();
+  // pesawat: pilih busur yang cukup panjang (bukan yang menempel di pintu) agar gerakannya terlihat
+  if(MP.tm){MP.tm.stop();MP.tm=null}
   B.gpl.selectAll('*').remove();
-  if(!RM){const pick=B.arcs.filter(d=>on(d.kawasan)).slice(0,sel.size?6:5);
-    const pl=pick.map((d,i)=>{const p=document.getElementById(d.id);if(!p)return null;
-      const g=B.gpl.append('g');g.append('path').attr('d','M-7,-2.4 L4,-2.4 L8,-7 L10,-7 L7.6,-2.4 L11,-2.4 L13,0 L11,2.4 L7.6,2.4 L10,7 L8,7 L4,2.4 L-7,2.4 L-9,5 L-10,5 L-9,0 L-10,-5 L-9,-5Z').attr('fill','#FFFAF0').attr('stroke','var(--ink)').attr('stroke-width',1.1).attr('stroke-linejoin','round');
-      return {g,p,L:p.getTotalLength(),dur:(8+i*1.3)*1000,off:i*1700}}).filter(Boolean);
-    MP.tm=d3.timer(t=>{pl.forEach(o=>{const f=((t+o.off)%o.dur)/o.dur,s=f*o.L,a=o.p.getPointAtLength(s),b=o.p.getPointAtLength(Math.min(o.L,s+2)),c=o.p.getPointAtLength(Math.max(0,s-2));
-      o.g.attr('transform',`translate(${a.x},${a.y}) rotate(${Math.atan2(b.y-c.y,b.x-c.x)*180/Math.PI})`)})})}
+  {const n=sel.size?6:5,seen=new Set(),pick=[];
+    B.arcs.filter(d=>on(d.kawasan)).slice(0,30).map(d=>{const p=document.getElementById(d.id);return p?{d,p,L:p.getTotalLength()}:null}).filter(Boolean)
+      .sort((a,b)=>b.L-a.L).forEach(o=>{if(pick.length<n&&!seen.has(o.d.negara)){seen.add(o.d.negara);pick.push(o)}});
+    const sc=B.mob?1.15:1.55;
+    const pl=pick.map((o,i)=>{
+      const g=B.gpl.append('g').style('opacity',0);g.append('path').attr('d','M-7,-2.4 L4,-2.4 L8,-7 L10,-7 L7.6,-2.4 L11,-2.4 L13,0 L11,2.4 L7.6,2.4 L10,7 L8,7 L4,2.4 L-7,2.4 L-9,5 L-10,5 L-9,0 L-10,-5 L-9,-5Z').attr('fill','#FFFAF0').attr('stroke','var(--ink)').attr('stroke-width',.9).attr('stroke-linejoin','round');
+      return {g,p:o.p,L:o.L,dur:Math.max(6000,Math.min(15000,o.L/55*1000)),off:i*1900}});
+    const place=(o,f)=>{const s0=f*o.L,a=o.p.getPointAtLength(s0),b=o.p.getPointAtLength(Math.min(o.L,s0+2)),c=o.p.getPointAtLength(Math.max(0,s0-2));
+      o.g.attr('transform',`translate(${a.x},${a.y}) rotate(${Math.atan2(b.y-c.y,b.x-c.x)*180/Math.PI}) scale(${sc})`)
+        .style('opacity',Math.min(1,f/.08,(1-f)/.08))};
+    if(!MOTION)pl.forEach((o,i)=>{place(o,.22+.11*i);o.g.style('opacity',1)});
+    else MP.tm=d3.timer(t=>pl.forEach(o=>place(o,((t+o.off)%o.dur)/o.dur)))}
   // daftar peringkat + catatan
   const rows=D.negara.filter(r=>on(r.kawasan)),tot=sortedEntries(group(rows,r=>r.negara,r=>r.nilai)).slice(0,5),mx=tot[0][1],all=sumBy(rows,r=>r.nilai);
   $('#petaList').innerHTML=tot.map(([n,v])=>`<li>${flagImg(n)||'<span class="fl blank"></span>'}<span class="nm">${n}</span><span class="bar"><i style="width:${v/mx*100}%;background:${WARNA[(D.negara.find(r=>r.negara===n)||{}).kawasan]||'#888'}"></i></span><span class="vl">${num(v)}</span></li>`).join('');
@@ -687,10 +708,17 @@ function kesimpulanInit(){
   const bali=shr(HD.provinsi.indexOf('Bali')),nas=sumBy(HD.data.filter(r=>r[1]===I),r=>r[y])/sumBy(HD.data,r=>r[y])*100;
   const nd=TK.meta.periode.reduce((a,p)=>a+p.n_dok,0);
   $('#cLead').innerHTML=`Dari tiket sampai meja makan, datanya bercerita satu hal: wisatawan asing memang datang ke Indonesia, tetapi <b>pintu tempat mereka masuk tidak sama dengan tempat mereka tinggal dan berbelanja</b>.`;
+  const lowTxt=MONF[low.t.getMonth()]+' '+low.t.getFullYear();
+  $('#cStats').innerHTML=[
+    [pct(top.total,T,0),`kunjungan lewat satu bandara: ${top.nama_pendek}`],
+    [pct(top3,T,0),'lewat tiga pintu teratas'],
+    [fmt1.format(rec)+'%',`total 2025 dibanding 2019`],
+    [fmt1.format(bali)+'%',`PDRB Bali dari akomodasi dan makan minum (rata-rata 38 provinsi: ${fmt1.format(nas)}%)`]
+  ].map(([b,t])=>`<div class="stat"><b>${b}</b><span>${t}</span></div>`).join('');
   $('#cFinds').innerHTML=[
     `<b>Kedatangan sangat terkonsentrasi.</b> Pada 2024, ${top.nama_pendek} menerima ${pct(top.total,T,0)} dari ${juta(T)} kunjungan, dan tiga pintu teratas menerima ${pct(top3,T,0)}.`,
     `<b>Asalnya lebih terpusat daripada kelihatannya.</b> Tiga negara asal teratas (${nTot.slice(0,3).map(x=>x[0]).join(', ')}) membawa ${pct(n3,T,0)} kunjungan.`,
-    `<b>${rec>=100?'Pemulihan sudah terlewati':'Pemulihan hampir tuntas'}.</b> Total 2025 mencapai ${fmt1.format(rec)}% dari total 2019, setelah titik terendah ${low.ym} (${fmt.format(low.wisman)} kunjungan sebulan).`,
+    `<b>${rec>=100?'Pemulihan sudah terlewati':'Pemulihan hampir tuntas'}.</b> Total 2025 mencapai ${fmt1.format(rec)}% dari total 2019, setelah titik terendah pada ${lowTxt} (${fmt.format(low.wisman)} kunjungan sebulan).`,
     `<b>Kamar dan meja makan paling terasa di Bali.</b> Akomodasi dan makan minum menyumbang ${fmt1.format(bali)}% PDRB Bali, dibanding ${fmt1.format(nas)}% rata-rata 38 provinsi. Ini korelasi, bukan bukti bahwa wisman penyebabnya.`,
     `<b>Cara BPS bercerita ikut berubah.</b> Dari ${fmt.format(nd)} Berita Resmi Statistik dalam korpus, kosakata antarperiode bergeser. Sebabnya terlihat dari judul laporan: sampai data Juli 2023 BRS ini masih memuat penumpang angkutan, dan sejak data Agustus 2023 isinya hanya pariwisata.`
   ].map(s=>`<li>${s}</li>`).join('');

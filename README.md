@@ -11,7 +11,8 @@ Penulis: Luthfia Nurul Izza (NIM 222313179).
 ```
 index.html        kerangka halaman (hero memakai gambar lanskap dan pesawat di assets/, plus bagian Kesimpulan)
 style.css         tema tiket dan kartu pos
-app.js            semua grafik dan scrollytelling (D3 v7, d3-sankey, d3-cloud lewat cdnjs)
+app.js            semua grafik dan scrollytelling
+lib/              D3 v7, d3-sankey, d3-cloud (disimpan lokal, tidak bergantung CDN)
 assets/flags/     bendera negara asal (flag-icons, lisensi MIT)
 data/             JSON olahan, koordinat_negara_asal.csv, dunia_110m.geojson, sumber_brs.csv
 skrip/            skrip pra-proses teks (tidak berubah)

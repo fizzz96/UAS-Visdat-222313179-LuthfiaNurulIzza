@@ -73,7 +73,7 @@
       <div class="barcode" aria-hidden="true"></div>
     </div>
   </div>
-  <p class="art-note">Ilustrasi hanya hiasan, bukan data.</p>
+  <p class="art-note"><span id="motionBox" hidden>Animasi dikurangi mengikuti pengaturan sistemmu. <button type="button" class="motion-btn" aria-pressed="false">Nyalakan animasi pesawat</button> · </span>Ilustrasi hanya hiasan, bukan data.</p>
 </header>
 
 <!-- ================= NAIK-TURUN ================= -->
@@ -226,13 +226,16 @@
     <p class="kicker">Ringkasan perjalanan</p>
     <h2>Pintu masuk bukan destinasi</h2>
     <p class="intro" id="cLead"></p>
+    <div class="stats" id="cStats" aria-label="Empat angka kunci"></div>
     <ol class="finds" id="cFinds"></ol>
-    <h3 class="h3">Apa artinya untuk judul kita?</h3>
-    <p id="cTitle"></p>
-    <h3 class="h3">Batas yang perlu diingat</h3>
-    <ul class="lim" id="cLim"></ul>
-    <h3 class="h3">Langkah berikutnya</h3>
-    <ul class="lim" id="cNext"></ul>
+    <div class="callout">
+      <p class="kicker">Apa artinya untuk judul kita?</p>
+      <p id="cTitle"></p>
+    </div>
+    <div class="duo">
+      <div><h3 class="h3">Batas yang perlu diingat</h3><ul class="lim" id="cLim"></ul></div>
+      <div><h3 class="h3">Langkah berikutnya</h3><ul class="lim" id="cNext"></ul></div>
+    </div>
     <p class="note">Sumber: BPS, statistik kunjungan wisatawan mancanegara 2024 dan 2025, PDRB provinsi menurut lapangan usaha 2020–2024, dan korpus Berita Resmi Statistik pariwisata. Rincian URL dan tanggal akses ada di bawah tiap grafik.</p>
   </div>
 </section>
@@ -251,9 +254,9 @@
 </main>
 <div id="tip" role="tooltip"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-sankey/0.12.3/d3-sankey.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.min.js"></script>
+<script src="lib/d3.min.js"></script>
+<script src="lib/d3-sankey.min.js"></script>
+<script src="lib/d3.layout.cloud.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

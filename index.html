@@ -1,213 +1,282 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<link rel="icon" href="data:,">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pintu masuk bukan destinasi: wisatawan mancanegara Indonesia</title>
-<meta name="description" content="Webstory data BPS: dari mana 13,9 juta wisatawan mancanegara datang pada 2024, lewat pintu mana mereka masuk, dan bagaimana BPS menceritakannya.">
-<meta property="og:title" content="Pintu masuk bukan destinasi">
-<meta property="og:description" content="Webstory data BPS tentang aliran wisatawan mancanegara ke Indonesia, 2024.">
-<meta name="theme-color" content="#EFECE6">
-<link rel="preload" href="fonts/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/dm-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css">
-<script>document.documentElement.classList.add('js')</script>
+<title>Pintu Masuk Bukan Destinasi · Wisatawan Mancanegara Indonesia 2024</title>
+<meta name="description" content="Webstory data BPS: dari mana 13,9 juta wisatawan mancanegara berangkat, lewat pintu mana mereka masuk ke Indonesia, dan apa artinya bagi ekonomi akomodasi.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23C65D3B'/%3E%3Cpath d='M10 36l44-18-14 30-10-9-8 7 2-12z' fill='%23FBF3E1'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,900;1,9..144,500;1,9..144,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<a class="skip" href="#konten">Lompat ke konten</a>
+<a class="skip" href="#kontenutama">Lompat ke isi</a>
 
-<!-- ============ PEMBUKA: peta penerbangan digerakkan gulir ============ -->
-<div class="mapscroll" id="mapscroll">
-  <div class="mapstage" id="mapstage">
-    <svg id="mapsvg" role="img" aria-labelledby="mapTitle mapDesc"><title id="mapTitle">Peta penerbangan wisatawan mancanegara 2024</title><desc id="mapDesc">Garis dari negara asal ke pintu masuk Indonesia. Tebal garis menunjukkan jumlah kunjungan. Ringkasan angka ada di teks bab berikutnya.</desc></svg>
-    <div class="hero-title" id="heroTitle">
-      <p class="kicker"><span>Webstory data BPS</span><span class="tix">Boarding pass · wisman 2024</span></p>
-      <h1>Pintu masuk <em class="hl">bukan</em> destinasi</h1>
-      <p class="lede" id="lede">Memuat data…</p>
-    </div>
-    <div class="counter" id="counter" aria-hidden="true"></div>
-    <div class="cue" id="cue">Gulir</div>
-    <div class="mapcap" id="mapcap" aria-live="polite"><p class="kicker" id="capK"></p><p id="capT"></p></div>
-    <div class="maplegend" id="maplegend"></div>
-    <p class="mapnote" id="mapnote"></p>
-  </div>
-</div>
+<nav class="topnav" id="topnav" aria-label="Navigasi bagian">
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <a class="brand" href="#tiket"><span class="brand-ico" aria-hidden="true">✈</span><span>Pintu Masuk <em>Bukan</em> Destinasi</span></a>
+  <ul id="navlist">
+    <li><a href="#tiket" data-sec="tiket">Tiket</a></li>
+    <li><a href="#naikturun" data-sec="naikturun">Naik-Turun</a></li>
+    <li><a href="#asal" data-sec="asal">Asal Tamu</a></li>
+    <li><a href="#gerbang" data-sec="gerbang">Pintu Gerbang</a></li>
+    <li><a href="#rupiah" data-sec="rupiah">Rupiah</a></li>
+    <li><a href="#kata" data-sec="kata">Kata BPS</a></li>
+    <li><a href="#tentang" data-sec="tentang">Tentang</a></li>
+  </ul>
+</nav>
 
-<main id="konten">
+<main id="kontenutama">
 
-<!-- ============ BAB 1: ALIRAN ============ -->
-<section class="chapter" id="aliran">
-  <div class="col rv">
-    <p class="kicker">Bab 1 · Aliran</p>
-    <h2>Dari mana mereka datang, lewat mana mereka masuk</h2>
-    <p class="lead">Peta tadi menunjukkan perjalanannya. Diagram di bawah merapikannya: lebar pita adalah jumlah kunjungan, warna adalah kawasan asal. Klik sebuah kawasan untuk melihat negara-negaranya.</p>
-  </div>
-  <div class="wide">
-    <div class="scrolly" id="scrolly">
-      <figure>
-        <nav id="crumb" aria-label="Posisi tampilan"></nav>
-        <div id="sankey"></div>
-        <p class="note" id="sankeyNote"></p>
-        <figcaption class="sumber" id="srcAliran"></figcaption>
-      </figure>
-      <div class="steps" id="steps">
-        <div class="step" data-view="semua"><p class="kicker">Langkah 1 · Semua pintu</p><p id="st0">Memuat…</p></div>
-        <div class="step" data-view="semua"><p class="kicker">Langkah 2 · Dua gerbang besar</p><p id="st1">Memuat…</p></div>
-        <div class="step" data-view="ASEAN"><p class="kicker">Langkah 3 · Tetangga dekat</p><p id="st2">Memuat…</p></div>
-        <div class="step" data-view="Eropa"><p class="kicker">Langkah 4 · Jauh di mata</p><p id="st3">Memuat…</p></div>
-        <div class="step" data-view="semua"><p class="kicker">Langkah 5 · Giliranmu</p><p>Gulir terus, lalu klik kawasan mana pun di diagram untuk melihat negara asalnya. Jejak di atas diagram membawamu kembali.</p></div>
+<!-- ================= TIKET ================= -->
+<header class="hero" id="tiket" data-title="Tiket">
+  <div class="ticket">
+    <div class="ticket-main">
+      <div class="ticket-strip"><span>BOARDING PASS · TIKET MASUK</span><span>BPS · WISMAN 2024</span><span class="hide-s">KELAS: SEMUA ASAL</span></div>
+      <div class="art">
+        <div class="hero-title">
+          <p class="eyebrow">Selamat datang di Nusantara</p>
+          <h1>Welcome<br>to <em>Indonesia</em></h1>
+        </div>
+        <div class="scene-wrap">
+        <svg class="scene" viewBox="0 40 800 400" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Ilustrasi lanskap Indonesia: sawah berundak, gunung berapi, candi, gapura pura, laut dengan karang dan perahu phinisi, dan sebuah pesawat yang mendekat">
+          <defs>
+            <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9FD8D2"/><stop offset=".55" stop-color="#F8E3B5"/><stop offset="1" stop-color="#F6C98A"/></linearGradient>
+            <linearGradient id="gSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3DB5AD"/><stop offset="1" stop-color="#1B6F7C"/></linearGradient>
+            <radialGradient id="gSun"><stop offset="0" stop-color="#FFE9A8"/><stop offset=".6" stop-color="#F9C14F"/><stop offset="1" stop-color="#F9C14F" stop-opacity="0"/></radialGradient>
+            <clipPath id="cTerrace"><path d="M170 480 L170 408 Q290 338 420 350 Q530 360 610 404 L660 480Z"/></clipPath>
+            <g id="palm"><path d="M0 0 Q6 -40 -2 -78" fill="none" stroke="#6B4A2F" stroke-width="5" stroke-linecap="round"/>
+              <g fill="none" stroke="#2F7D5B" stroke-width="5" stroke-linecap="round"><path d="M-2 -78 Q-28 -92 -50 -76"/><path d="M-2 -78 Q-22 -104 -46 -100"/><path d="M-2 -78 Q4 -108 -8 -118"/><path d="M-2 -78 Q24 -106 46 -98"/><path d="M-2 -78 Q30 -90 52 -72"/><path d="M-2 -78 Q-6 -92 18 -112"/></g></g>
+          </defs>
+          <rect width="800" height="480" fill="url(#gSky)"/>
+          <circle cx="620" cy="150" r="92" fill="url(#gSun)"/>
+          <circle cx="620" cy="150" r="46" fill="#F9C14F" opacity=".9"/>
+          <g fill="#fff" opacity=".78"><ellipse cx="470" cy="96" rx="52" ry="12"/><ellipse cx="500" cy="88" rx="30" ry="10"/><ellipse cx="740" cy="70" rx="44" ry="10"/><ellipse cx="700" cy="230" rx="38" ry="8"/><ellipse cx="300" cy="150" rx="40" ry="9"/></g>
+          <!-- gunung berapi -->
+          <path d="M360 345 L438 160 Q456 146 474 160 L570 345Z" fill="#92C1B9"/>
+          <path d="M230 350 L296 214 Q322 198 348 214 L424 350Z" fill="#6FA59D"/>
+          <path d="M296 214 Q322 226 348 214" fill="none" stroke="#4F857F" stroke-width="3"/>
+          <g fill="#fff" opacity=".6"><circle cx="322" cy="198" r="11"/><circle cx="336" cy="184" r="14"/><circle cx="352" cy="166" r="12"/><circle cx="458" cy="146" r="9"/><circle cx="470" cy="130" r="11"/></g>
+          <!-- laut dan karang -->
+          <rect y="388" width="800" height="92" fill="url(#gSea)"/>
+          <g fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2" stroke-linecap="round"><path d="M560 410 q14 -6 28 0 t28 0"/><path d="M640 436 q14 -6 28 0 t28 0"/><path d="M700 402 q14 -6 28 0 t28 0"/><path d="M590 456 q14 -6 28 0 t28 0"/></g>
+          <path d="M606 396 Q608 350 628 344 Q642 338 652 360 Q664 344 682 350 Q704 358 698 396Z" fill="#2E7D5B"/>
+          <path d="M600 398 Q650 388 704 398 Q650 408 600 398Z" fill="#fff" opacity=".7"/>
+          <path d="M728 398 Q730 372 744 368 Q758 364 764 398Z" fill="#2E7D5B"/>
+          <path d="M556 398 Q558 380 570 378 Q582 376 586 398Z" fill="#2E7D5B"/>
+          <!-- phinisi -->
+          <g transform="translate(40 4)"><path d="M630 420 Q670 442 716 420 L708 410 L638 410Z" fill="#7A4B3A"/><path d="M676 410 V362 M662 410 V376" stroke="#5A3A2D" stroke-width="2.5"/><path d="M676 408 V364 L712 408Z" fill="#FBF3E1"/><path d="M662 408 V378 L636 408Z" fill="#F5DDB0"/><path d="M676 362 l12 4 l-12 4z" fill="#C65D3B"/></g>
+          <!-- bukit + Borobudur -->
+          <path d="M-10 372 Q110 308 262 356 L262 410 L-10 410Z" fill="#7DB87A"/>
+          <g fill="#A8765A"><rect x="88" y="336" width="150" height="14" rx="2"/><rect x="101" y="322" width="124" height="14" rx="2"/><rect x="114" y="308" width="98" height="14" rx="2"/><rect x="127" y="296" width="72" height="12" rx="2"/></g>
+          <g fill="#8E5E46"><path d="M163 296 q0 -26 0 -30 q-12 0 -12 14 q0 12 12 16z"/><path d="M163 296 q12 -4 12 -16 q0 -14 -12 -14z"/><circle cx="163" cy="262" r="3"/></g>
+          <g fill="#8E5E46"><path d="M138 296 q-9 -2 -9 -12 q0 -10 9 -10 q9 0 9 10 q0 10 -9 12z"/><path d="M188 296 q-9 -2 -9 -12 q0 -10 9 -10 q9 0 9 10 q0 10 -9 12z"/></g>
+          <g fill="#8E5E46" opacity=".7"><circle cx="112" cy="316" r="6"/><circle cx="138" cy="316" r="6"/><circle cx="164" cy="316" r="6"/><circle cx="190" cy="316" r="6"/><circle cx="214" cy="316" r="6"/></g>
+          <!-- sawah berundak -->
+          <path d="M170 480 L170 408 Q290 338 420 350 Q530 360 610 404 L660 480Z" fill="#5FA566"/>
+          <g clip-path="url(#cTerrace)" fill="none" stroke-width="13">
+            <path d="M150 396 Q400 296 700 396" stroke="#8CC57E"/><path d="M150 414 Q400 314 700 414" stroke="#4E9A62"/><path d="M150 432 Q400 332 700 432" stroke="#A9D183"/><path d="M150 450 Q400 350 700 450" stroke="#3F8C5A"/><path d="M150 468 Q400 368 700 468" stroke="#8CC57E"/><path d="M150 486 Q400 386 700 486" stroke="#4E9A62"/>
+          </g>
+          <use href="#palm" x="206" y="402"/><use href="#palm" x="578" y="408" transform="translate(0 0) scale(1)"/>
+          <!-- tanah depan + gapura pura -->
+          <path d="M-10 424 Q200 410 420 440 T810 430 L810 490 L-10 490Z" fill="#2F7D5B"/>
+          <g fill="#A25A3C"><path d="M6 430 V362 H18 V350 H32 V338 H44 V352 H62 V430Z"/><path d="M122 430 V352 H140 V338 H152 V350 H166 V362 H178 V430Z"/></g>
+          <g fill="#7C412B"><rect x="6" y="418" width="56" height="12"/><rect x="122" y="418" width="56" height="12"/><rect x="18" y="364" width="3" height="54" opacity=".35"/><rect x="164" y="364" width="3" height="54" opacity=".35"/></g>
+          <!-- daun depan -->
+          <path d="M-10 480 Q40 410 130 400 Q80 440 90 490Z" fill="#1E5A46"/><path d="M-10 486 Q70 450 190 470 Q100 470 60 500Z" fill="#276B52"/>
+          <path d="M810 480 Q760 420 676 414 Q724 450 716 490Z" fill="#1E5A46"/><path d="M810 488 Q730 452 620 474 Q712 474 748 500Z" fill="#276B52"/>
+          <!-- rute pesawat -->
+          <path id="rutePesawat" d="M-40 262 C180 214 420 170 590 334" fill="none" stroke="#15303F" stroke-opacity=".5" stroke-width="2" stroke-dasharray="2 8" stroke-linecap="round"/>
+          <g id="pesawat"><path d="M-14 -3 L8 -3 L16 -11 L20 -11 L15 -3 L22 -3 L26 0 L22 3 L15 3 L20 11 L16 11 L8 3 L-14 3 L-18 8 L-20 8 L-18 0 L-20 -8 L-18 -8Z" fill="#FBF3E1" stroke="#15303F" stroke-width="1.6" stroke-linejoin="round"/>
+            <animateMotion dur="11s" repeatCount="indefinite" rotate="auto" keyPoints="0;1" keyTimes="0;1" calcMode="linear"><mpath href="#rutePesawat"/></animateMotion></g>
+        </svg>
+        <span class="pin" style="left:19%;top:56%">Borobudur</span>
+        <span class="pin" style="left:40%;top:38%">Gunung Bromo</span>
+        <span class="pin" style="left:51%;top:80%">Sawah berundak</span>
+        <span class="pin" style="left:80%;top:71%">Raja Ampat</span>
+        <span class="pin" style="left:7%;top:74%">Gapura pura</span>
+        </div>
+      </div>
+      <div class="ticket-body">
+        <p class="tagline">Pintu masuk bukan destinasi.</p>
+        <p class="lead" id="heroLead">Memuat data…</p>
+        <div class="origin-row" aria-label="Contoh negara asal wisatawan"><span class="origin-lab">Berangkat dari</span><span id="heroFlags" class="flags"></span></div>
+        <a class="cta" href="#naikturun">Mulai perjalanan <span aria-hidden="true">↓</span></a>
       </div>
     </div>
+    <div class="ticket-stub" aria-label="Ringkasan tiket">
+      <div class="stub-row"><span class="k">Penumpang</span><span class="v">Wisatawan mancanegara</span></div>
+      <div class="stub-row"><span class="k">Tahun</span><span class="v">2024</span></div>
+      <div class="stub-row"><span class="k">Asal</span><span class="v" id="stubAsal">…</span></div>
+      <div class="stub-row"><span class="k">Tujuan</span><span class="v">Indonesia</span></div>
+      <div class="stub-big"><span class="k">Pintu terpopuler</span><b id="stat">…</b><span class="v" id="statTxt">…</span></div>
+      <div class="barcode" aria-hidden="true"></div>
+    </div>
   </div>
-  <div class="col rv">
-    <p>Matriks asal–tujuan merangkum hal yang sama dalam bentuk tabel warna: tiap sel adalah satu kawasan asal lewat satu pintu masuk. Tiga ukuran tersedia, dan yang ketiga paling berguna untuk melihat <em class="hl">siapa yang memilih apa</em>.</p>
+  <p class="art-note">Ilustrasi hanya hiasan, bukan data.</p>
+</header>
+
+<!-- ================= NAIK-TURUN ================= -->
+<section id="naikturun" data-title="Naik-Turun">
+  <div class="sec-head">
+    <p class="kicker">Satu · Perjalanan sepanjang waktu</p>
+    <h2>Sempat sepi, lalu ramai lagi</h2>
+    <p class="intro">Sebelum 2020, pesawat dari luar negeri datang hampir tanpa jeda. Lalu pintu-pintu ditutup. Gulir pelan-pelan, garisnya akan tumbuh mengikuti ceritanya.</p>
   </div>
-  <div class="wide">
-    <figure class="rv">
-      <div class="seg" id="segOD" role="group" aria-label="Pilih ukuran matriks"></div>
-      <div id="odChart"></div>
+  <div class="scrolly" id="sc-tren">
+    <figure class="stage">
+      <div class="stage-head"><h3>Kunjungan wisman per bulan, 2019–2025</h3>
+        <div class="seg" id="segTren" role="group" aria-label="Pilih bentuk grafik"></div></div>
+      <div class="plot" id="trenChart"></div>
+      <p class="note" id="trenNote"></p>
+      <figcaption class="sumber" id="srcTren"></figcaption>
+    </figure>
+    <div class="steps" data-steps></div>
+  </div>
+</section>
+
+<!-- ================= ASAL TAMU ================= -->
+<section id="asal" data-title="Asal Tamu">
+  <div class="sec-head">
+    <p class="kicker">Dua · Dari mana mereka berangkat</p>
+    <h2>Lima puluh lima asal, satu tujuan</h2>
+    <p class="intro">Tiap garis lengkung adalah satu arus kunjungan dari negara asal ke pintu masuknya. Makin tebal, makin ramai. Pesawat kecil menandai arus terbesar pada pilihan yang sedang tampil.</p>
+  </div>
+  <div class="scrolly" id="sc-peta">
+    <figure class="stage">
+      <div class="stage-head"><h3>Arus wisman 2024: negara asal → pintu masuk</h3></div>
+      <div class="chipbar" id="petaChips" role="group" aria-label="Pilih kawasan asal (boleh lebih dari satu)"></div>
+      <div class="plot" id="petaChart"></div>
+      <p class="note" id="petaNote"></p>
+      <figcaption class="sumber" id="srcPeta"></figcaption>
+    </figure>
+    <div class="steps" data-steps></div>
+  </div>
+</section>
+
+<!-- ================= PINTU GERBANG ================= -->
+<section id="gerbang" data-title="Pintu Gerbang">
+  <div class="sec-head">
+    <p class="kicker">Tiga · Lewat pintu mana</p>
+    <h2>Banyak tamu, sedikit pintu</h2>
+    <p class="intro">Lebar pita menunjukkan jumlah kunjungan, warna menunjukkan kawasan asal. Perhatikan bagaimana pitanya berpindah saat pilihan berganti. Kamu juga bisa menekan nama kawasan, atau tombol di atas diagram, untuk melihat negara-negaranya.</p>
+  </div>
+  <div class="scrolly" id="sc-sankey">
+    <figure class="stage">
+      <div class="stage-head"><nav id="crumb" aria-label="Posisi tampilan"></nav></div>
+      <div class="chipbar" id="segKaw" role="group" aria-label="Pilih kawasan asal"></div>
+      <div class="plot" id="sankey"></div>
+      <p class="note" id="sankeyNote"></p>
+      <figcaption class="sumber" id="srcAliran"></figcaption>
+    </figure>
+    <div class="steps" data-steps></div>
+  </div>
+
+  <div class="sec-head sub">
+    <h3 class="h3">Versi tabel: siapa masuk lewat mana</h3>
+    <p class="intro">Isi aliran yang sama, kali ini sebagai tabel warna. Tiap sel adalah satu kawasan asal yang masuk lewat satu pintu. Makin terang, makin banyak.</p>
+  </div>
+  <div class="scrolly" id="sc-od">
+    <figure class="stage">
+      <div class="stage-head"><h3>Kawasan asal × pintu masuk, 2024</h3>
+        <div class="seg" id="segOD" role="group" aria-label="Pilih ukuran matriks"></div></div>
+      <div class="plot" id="odChart"></div>
       <div class="lgd" id="odLegend"></div>
       <p class="note" id="odNote"></p>
       <figcaption class="sumber" id="srcOD"></figcaption>
     </figure>
+    <div class="steps" data-steps></div>
   </div>
 </section>
 
-<!-- ============ BAB 2: TREN ============ -->
-<section class="chapter" id="tren">
-  <div class="col rv">
-    <p class="kicker">Bab 2 · Waktu</p>
-    <h2>Jalur ini pernah nyaris kosong</h2>
-    <p class="lead" id="trenLead">Memuat…</p>
-    <p>Garis menunjukkan kunjungan wisman tiap bulan. Area abu-abu menandai periode pandemi (Mar 2020–Des 2021); garis putus-putus adalah rata-rata bulanan 2019 sebagai pembanding. Arahkan kursor atau sentuh grafik untuk melihat angka per bulan.</p>
+<!-- ================= RUPIAH ================= -->
+<section id="rupiah" data-title="Rupiah">
+  <div class="sec-head">
+    <p class="kicker">Empat · Setelah tiba</p>
+    <h2>Rupiah di balik kamar hotel dan meja makan</h2>
+    <p class="intro">Wisatawan butuh tempat tidur dan makan, dan itu terlihat di angka ekonomi daerah. Kita lihat besarnya sektor akomodasi serta makan minum di 38 provinsi, lalu masuk makin dalam.</p>
   </div>
-  <div class="wide">
-    <figure class="rv">
-      <div class="chips" id="trenChips"></div>
-      <div id="trenChart"></div>
-      <p class="note" id="trenNote"></p>
-      <figcaption class="sumber" id="srcTren"></figcaption>
-    </figure>
-  </div>
-</section>
-
-<!-- ============ BAB 3: HIERARKI ============ -->
-<section class="chapter" id="hierarki">
-  <div class="col rv">
-    <p class="kicker">Bab 3 · Hierarki</p>
-    <h2>Seberapa besar ekonomi akomodasi dan makan minum?</h2>
-    <p class="lead" id="hStat">Memuat…</p>
-    <p>Wisman yang sudah masuk lalu menginap dan makan di suatu daerah. Treemap dan icicle di bawah memperlihatkan struktur PDRB 38 provinsi menurut 17 lapangan usaha: <b>ukuran</b> adalah besar PDRB, <b>warna</b> adalah pertumbuhan riil. Kotak bergaris oranye adalah akomodasi dan makan minum. Klik kotak untuk masuk lebih dalam.</p>
-  </div>
-  <div class="wide">
-    <div class="seg" id="segUrut" role="group" aria-label="Urutan hierarki"></div>
-    <figure class="rv">
-      <nav id="hCrumb" aria-label="Posisi tampilan"></nav>
-      <div id="treemap"></div>
-      <div id="icicle"></div>
+  <div class="scrolly" id="sc-hier">
+    <figure class="stage">
+      <div class="stage-head"><nav id="hCrumb" aria-label="Posisi tampilan"></nav>
+        <div class="seg" id="segUrut" role="group" aria-label="Urutan hierarki"></div></div>
+      <div class="plot" id="treemap"></div>
       <div class="lgd" id="hLegend"></div>
-      <p class="note">Ukuran = PDRB atas dasar harga konstan (ADHK) 2024, triliun rupiah. Warna (Viridis, legenda di atas) = pertumbuhan riil PDRB 2023→2024 dalam persen, dipotong pada persentil ke-5 dan ke-95. Garis tepi oranye = akomodasi dan makan minum.</p>
+      <p class="note">Ukuran = PDRB atas dasar harga konstan (ADHK) 2024, triliun rupiah. Warna (Viridis) = pertumbuhan riil 2023→2024 dalam persen, dipotong di persentil ke-5 dan ke-95. Garis tepi oranye = akomodasi dan makan minum. Klik kotak untuk masuk lebih dalam.</p>
       <p class="note" id="hNote"></p>
       <figcaption class="sumber" id="srcH"></figcaption>
     </figure>
+    <div class="steps" data-steps></div>
   </div>
+  <figure class="stage flat">
+    <div class="stage-head"><h3>Tampilan icicle: semua tingkat sekaligus</h3><span class="note">Ikut pilihan di treemap di atas.</span></div>
+    <div class="plot flat" id="icicle"></div>
+    <figcaption class="sumber" data-src="pdrb"></figcaption>
+  </figure>
 </section>
 
-<!-- ============ BAB 4: TEKS (latar malam) ============ -->
-<section class="chapter night" id="teks">
-  <div class="col rv">
-    <p class="kicker">Bab 4 · Teks</p>
-    <h2>Yang dilaporkan BPS ikut bergeser</h2>
-    <p class="lead" id="teksLead">Memuat…</p>
-    <p>Kami membaca 127 Berita Resmi Statistik (BRS) pariwisata dari Nov 2015 sampai Agu 2026. Tiap kata di bawah adalah satu kata dari BRS; <b>ukuran</b> adalah seberapa sering kata itu muncul, <b>warna</b> adalah nasibnya antara dua zaman.</p>
+<!-- ================= KATA BPS ================= -->
+<section id="kata" data-title="Kata BPS">
+  <div class="sec-head">
+    <p class="kicker">Lima · Membaca laporan resmi</p>
+    <h2>Apa yang BPS tulis ikut bergeser</h2>
+    <p class="intro">Kami membaca 127 Berita Resmi Statistik (BRS) pariwisata sejak November 2015. Kosakatanya berubah di pertengahan 2023, bukan saat pandemi. Kata "penumpang" berhenti dipakai setelah data Juli 2023, sedangkan "perjalanan" dan "wisnus" mulai muncul sejak Juni 2023. Dugaan kami, format BRS gabungan pariwisata dan transportasi dipisah. Ini dugaan, belum terbukti.</p>
   </div>
-  <div class="wide">
-    <figure class="rv">
-      <div class="seg" id="segBanding" role="group" aria-label="Pilih pembanding"></div>
-      <div class="seg" id="segSisi" role="group" aria-label="Pilih sisi yang ditampilkan"></div>
-      <div class="status" id="statusAwan"></div>
-      <div class="cloudwrap"><svg id="awan" role="img" aria-labelledby="awanT"><title id="awanT">Awan kata dari Berita Resmi Statistik pariwisata</title></svg></div>
-      <p class="note" id="awanNote"></p>
+
+  <div class="scrolly" id="sc-frek">
+    <figure class="stage">
+      <div class="stage-head"><h3>Kata teratas per periode</h3></div>
+      <div class="toolbar"><div class="seg" id="segPeriode" role="group" aria-label="Pilih periode"></div><div class="seg" id="segMode" role="group" aria-label="Pilih ukuran"></div></div>
+      <div class="plot" id="frekChart"></div>
+      <p class="note">Paling sering = kemunculan per 10.000 kata. Paling khas = skor log-odds periode ini dibanding dua periode lain. Awan kata memakai angka "paling sering".</p>
       <figcaption class="sumber" data-src="teks"></figcaption>
     </figure>
+    <div class="steps" data-steps></div>
   </div>
-  <p class="rhet rv" id="rhet"></p>
-  <div class="wide" style="margin-top:3rem">
-    <div class="col rv" style="padding:0">
-      <p>Untuk melihat <em class="hl">kapan</em> pergeserannya terjadi, ketik kata apa saja (maksimal empat, pisahkan koma) atau pakai tombol cepat.</p>
-    </div>
-    <figure class="rv">
-      <input class="fld" id="kataInput" list="kataList" aria-label="Cari kata (pisahkan koma, maksimal 4)" placeholder="mis. penumpang, perjalanan">
-      <datalist id="kataList"></datalist>
-      <div class="seg" id="segKata"></div>
-      <div id="trenKata"></div>
+
+  <div class="scrolly" id="sc-kata">
+    <figure class="stage">
+      <div class="stage-head"><h3>Kata tertentu dari bulan ke bulan</h3></div>
+      <div class="toolbar"><input class="fld" id="kataInput" list="kataList" aria-label="Cari kata (pisahkan koma, maksimal 4)" placeholder="mis. penumpang, perjalanan"><datalist id="kataList"></datalist><div class="seg" id="segKata"></div></div>
+      <div class="plot" id="trenKata"></div>
       <p class="note" id="trenKataNote"></p>
-      <p class="note">Garis putus-putus vertikal: awal pandemi (Mar 2020), awal pemulihan (Jan 2022), dan data Agustus 2023, bulan pertama BRS tanpa kosakata angkutan. Satuan: kemunculan per 10.000 kata.</p>
+      <p class="note">Garis putus-putus vertikal: awal pandemi (Mar 2020), awal pemulihan (Jan 2022), dan perkiraan perubahan format BRS (Jul 2023). Satuan: kemunculan per 10.000 kata.</p>
       <figcaption class="sumber" data-src="teks"></figcaption>
     </figure>
-    <div class="col rv" style="padding:0">
-      <p>Terakhir, pasangan kata yang sering berdampingan. Jaringan ini berganti sesuai periode yang kamu pilih.</p>
-    </div>
-    <figure class="rv">
-      <div class="seg" id="segPeriode" role="group" aria-label="Pilih periode"></div>
-      <div id="bigramChart"></div>
+    <div class="steps" data-steps></div>
+  </div>
+
+  <div class="scrolly" id="sc-bigram">
+    <figure class="stage">
+      <div class="stage-head"><h3>Pasangan kata yang sering berdampingan</h3></div>
+      <div class="toolbar"><div class="seg" id="segPeriode2" role="group" aria-label="Pilih periode jaringan kata"></div></div>
+      <div class="plot" id="bigramChart"></div>
       <p class="note">Pasangan kata berurutan (bigram) teratas pada periode terpilih; tebal garis = jumlah kemunculan, ukuran titik = keterhubungan.</p>
       <p class="note" id="teksNote"></p>
       <figcaption class="sumber" data-src="teks"></figcaption>
     </figure>
+    <div class="steps" data-steps></div>
   </div>
 </section>
 
-<!-- ============ PENUTUP ============ -->
-<section class="end" id="penutup">
-  <div class="col rv">
-    <p class="kicker">Penutup</p>
-    <h2>Apa yang bisa dibawa pulang</h2>
-    <ul id="bawaPulang"></ul>
-    <details><summary>Cara membaca dan alasan pilihan visual</summary>
-      <ul>
-        <li><b>Peta penerbangan dan Sankey:</b> posisi dan lebar = volume kunjungan; warna = kawasan asal (palet Okabe-Ito). Ikon pesawat, kapal, dan truk menandai jenis pintu masuk menurut kategori BPS.</li>
-        <li><b>Matriks asal–tujuan:</b> warna Viridis berskala akar kuadrat agar sel kecil tetap terbaca. Ukuran ketiga memakai warna divergen ungu–oranye yang aman bagi buta warna, berpusat pada 1.</li>
-        <li><b>Treemap dan icicle:</b> ukuran dan warna mengkodekan dua variabel berbeda (besar PDRB dan pertumbuhan riil).</li>
-        <li><b>Awan kata:</b> ukuran = laju kemunculan per 10.000 kata; warna = status (oranye hilang, biru muncul, abu-abu bertahan). Merah dan hijau tidak pernah dipakai membedakan data.</li>
-      </ul>
-    </details>
-    <details><summary>Metode data dan pengolahan</summary>
-      <ul>
-        <li>Semua data utama berasal dari BPS; judul tabel/publikasi, tahun, URL, dan tanggal akses ada di bawah setiap grafik.</li>
-        <li>Teks: ekstraksi PDF, case folding, tokenisasi, stopword (Sastrawi dan tambahan), periode menurut bulan data. Skrip ada di folder <code>skrip/</code>, hasil olahan di <code>data/</code>.</li>
-        <li>Basemap peta memakai Natural Earth (domain publik) dan koordinat pusat negara hanya untuk menggambar garis; ini data pendukung non-BPS.</li>
-      </ul>
-    </details>
-    <details><summary>Keterbatasan</summary>
-      <ul id="batas"></ul>
-    </details>
-    <details><summary>Deklarasi penggunaan alat bantu AI</summary>
-      <p>Claude (Anthropic) dipakai sebagai alat bantu untuk menulis dan merapikan kode, skrip pengolahan teks, dan draf teks halaman ini. Seluruh data berasal dari BPS. Keputusan analisis, pemeriksaan hasil, dan seluruh isi proyek menjadi tanggung jawab penulis.</p>
-    </details>
+<!-- ================= TENTANG ================= -->
+<section id="tentang" data-title="Tentang" class="about">
+  <div class="postcard card-about">
+    <div class="pc-stamp" aria-hidden="true"><img src="assets/flags/id.svg" alt=""></div>
+    <h2>Tentang proyek ini</h2>
+    <p>Webstory ini dibuat untuk UAS Visualisasi Data dan Informasi. Semua angka bersumber dari BPS: statistik kunjungan wisatawan mancanegara (edisi 2024 dan 2025), PDRB provinsi menurut lapangan usaha 2020–2024, dan korpus Berita Resmi Statistik pariwisata. Tiap grafik memuat judul, tahun data, URL, dan tanggal akses sumbernya di bawahnya.</p>
+    <p>Data ini mencatat tempat wisman <em>masuk</em>, bukan ke mana mereka pergi sesudahnya. Karena itu pintu masuk tidak boleh dibaca sebagai destinasi. Warna data memakai palet Okabe-Ito dan Viridis supaya terbaca oleh pembaca buta warna. Deklarasi penggunaan AI ada di README repositori.</p>
+    <p class="hand">Terima kasih sudah mampir. Sampai jumpa di pintu kedatangan!</p>
   </div>
+  <footer>Proyek UAS Visualisasi Data dan Informasi · <a href="https://github.com/fizzz96/UAS-Visdat-222313179-LuthfiaNurulIzza">github.com/fizzz96/UAS-Visdat-222313179-LuthfiaNurulIzza</a><br>Bendera: <a href="https://github.com/lipis/flag-icons">flag-icons</a> (MIT).</footer>
 </section>
-
-<footer>
-  <div class="col">
-    Proyek UAS Visualisasi Data dan Informasi (K203407), Politeknik Statistika STIS · Luthfia Nurul Izza (222313179)<br>
-    Repositori: <a href="https://github.com/fizzz96/UAS-Visdat-222313179-LuthfiaNurulIzza">https://github.com/fizzz96/UAS-Visdat-222313179-LuthfiaNurulIzza</a>
-  </div>
-</footer>
 </main>
 <div id="tip" role="tooltip"></div>
 
-<script src="lib/d3.min.js"></script>
-<script src="lib/d3-sankey.min.js"></script>
-<script src="lib/d3.layout.cloud.js"></script>
-<script src="lib/topojson-client.min.js"></script>
-<script src="js/core.js"></script>
-<script src="js/peta.js"></script>
-<script src="js/sankey.js"></script>
-<script src="js/tren.js"></script>
-<script src="js/hierarki.js"></script>
-<script src="js/teks.js"></script>
-<script src="js/akhir.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-sankey/0.12.3/d3-sankey.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.min.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

@@ -9,7 +9,7 @@ Penulis: Luthfia Nurul Izza (NIM 222313179).
 ## Struktur berkas
 
 ```
-index.html        kerangka halaman, ilustrasi hero (SVG buatan tangan)
+index.html        kerangka halaman (hero memakai gambar lanskap dan pesawat di assets/, plus bagian Kesimpulan)
 style.css         tema tiket dan kartu pos
 app.js            semua grafik dan scrollytelling (D3 v7, d3-sankey, d3-cloud lewat cdnjs)
 assets/flags/     bendera negara asal (flag-icons, lisensi MIT)
@@ -77,9 +77,9 @@ Warna data memakai palet Okabe-Ito dan Viridis (ramah buta warna). Terakota, tea
 - Teks: kata "penumpang" menghilang setelah data 2023-07 dan "perjalanan/wisnus" muncul sejak 2023-06. Dugaannya perubahan format BRS, bukan perubahan bahasa akibat pandemi. Dugaan ini belum dibuktikan.
 - Pintu "Perbatasan Laut/Darat" dan "Pintu lainnya" tidak punya koordinat, jadi tidak tergambar sebagai busur di peta. Persentasenya dicantumkan di bawah peta.
 - Titik putus-putus pada peta (misalnya "Eropa Timur Lainnya") adalah titik tengah wilayah, bukan lokasi negara.
-- Ilustrasi hero hanya hiasan dan bukan data.
+- Ilustrasi hero hanya hiasan dan bukan data. Bagian Kesimpulan menghitung semua angkanya dari data yang sama dengan grafik.
 - Pengujian dilakukan di Chromium headless (Playwright) pada beberapa ukuran layar. Tampilan di perangkat HP sungguhan perlu dicek manual.
 
 ## Deklarasi penggunaan AI
 
-Claude (Anthropic) dipakai sebagai asisten untuk membantu menulis dan merapikan kode, skrip pengolahan teks, desain ulang tampilan, dan draf teks. Ilustrasi hero digambar sebagai SVG lewat kode. Alat pembuat gambar (OpenArt) sempat dicoba untuk ilustrasi hero, tetapi hasilnya tidak dipakai. Seluruh data berasal dari BPS, dan keputusan analisis serta pemeriksaan hasil dilakukan penulis. Sesuaikan paragraf ini dengan pemakaian yang sebenarnya.
+Claude (Anthropic) dipakai sebagai asisten untuk membantu menulis dan merapikan kode, skrip pengolahan teks, desain ulang tampilan, draf teks, dan bagian Kesimpulan. Gambar lanskap Indonesia (INDONESIA_LANDSCAPE) dan pesawat (PESAWAT) disediakan penulis; pesawat statis di lanskap dihapus dengan penambalan langit, dan latar pesawat dihilangkan dengan model rembg (u2net) yang dijalankan lokal karena kredit Magnific tidak tersedia. Jaringan pasangan kata ditata ulang dengan gaya gravitasi dan penghindaran tabrakan label. Seluruh data berasal dari BPS, dan keputusan analisis serta pemeriksaan hasil dilakukan penulis. Sesuaikan paragraf ini dengan pemakaian yang sebenarnya.

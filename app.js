@@ -51,8 +51,8 @@ function segment(id,items,get,set,cls){
     b.setAttribute('aria-pressed',get()===v);b.onclick=()=>set(v);el.append(b)});
 }
 const stampHTML=list=>{
-  const f=(list&&list.length?list:['Indonesia']).filter(n=>ISO[n]).slice(0,1);
-  return `<span class="pc-mark" aria-hidden="true">BPS<br>2024</span><span class="pc-stamp" aria-hidden="true">${f.map(n=>`<img src="${flagSrc(n)}" alt="">`).join('')}</span>`;
+  const f=(list&&list.length?list:['Indonesia']).filter(n=>ISO[n]).slice(0,2);
+  return `<span class="pc-mark" aria-hidden="true">BPS<br>2024</span><span class="pc-stamp ${f.length>1?'two':''}" aria-hidden="true">${f.map(n=>`<img src="${flagSrc(n)}" alt="">`).join('')}</span>`;
 };
 /* Kerangka scrollytelling: kartu pos di kanan, panggung lengket di kiri. */
 function scrolly(id,steps,onStep){
@@ -102,16 +102,15 @@ function trenInit(d){
   const endOf=y=>new Date(y,11,1);
   const steps=[
     {t:'2019: sebelum badai',p:`Sepanjang 2019 tercatat <b>${num(t[2019])}</b> kunjungan, rata-rata ${ribu(avg19)} per bulan. Anggap ini garis dasar: patokan untuk menimbang semua yang terjadi sesudahnya.`,end:endOf(2019),stamp:['Indonesia']},
-    {t:'Maret 2020: pintu ditutup',p:`Dalam hitungan bulan, kunjungan runtuh. Titik terendah tercatat pada ${MONF[lo.t.getMonth()]} ${lo.t.getFullYear()}: hanya <b>${num(lo.wisman)}</b> kunjungan, sekitar ${pct(lo.wisman,avg19,0)} dari rata-rata bulanan 2019.`,end:lo.t,hand:'Bandara mendadak lengang.'},
+    {t:'Maret 2020: pintu ditutup',p:`Dalam hitungan bulan, kunjungan runtuh. Titik terendah jatuh pada ${MONF[lo.t.getMonth()]} ${lo.t.getFullYear()}: hanya <b>${num(lo.wisman)}</b> kunjungan, sekitar ${pct(lo.wisman,avg19,0)} dari rata-rata bulanan 2019.`,end:endOf(2020),hand:'Bandara mendadak lengang.'},
     {t:'2021: setahun yang sepi',p:`Seluruh 2021 hanya mencatat <b>${num(t[2021])}</b> kunjungan, ${pct(t[2021],t[2019])} dari 2019. Area abu-abu menandai masa pandemi menurut data ini (Mar 2020 sampai Des 2021).`,end:endOf(2021)},
     {t:'2022–2023: pelan, tapi naik',p:`Tahun 2022 mencatat ${num(t[2022])} kunjungan, lalu 2023 melompat ke <b>${num(t[2023])}</b>, atau ${pct(t[2023],t[2019],0)} dari 2019.`,end:endOf(2023)},
     {t:'2024–2025: hampir kembali',p:`Pada 2024 tercatat ${num(t[2024])} kunjungan dan pada 2025 <b>${num(t[2025])}</b>, atau ${pct(t[2025],t[2019])} dari 2019. ${t[2025]>=t[2019]?'Angka 2019 akhirnya terlampaui.':'Garis dasar 2019 belum sepenuhnya terkejar.'}`,end:endOf(2025),stamp:['Indonesia','Australia']},
     {t:'Giliranmu menjelajah',p:`Arahkan kursor (atau sentuh) grafik untuk melihat angka tiap bulan. Tombol di atas grafik mengganti tampilan menjadi tumpukan tahun: satu garis untuk satu tahun, dibaca dari Januari sampai Desember.`,end:endOf(2025),free:true}];
   TR.end=steps[0].end;
-  trenSeg();
-  scrolly('sc-tren',steps,(i,s)=>{
-    if(!s.free&&TR.mode!=='seri'){TR.mode='seri';trenRender(false);trenSeg()}
-    if(TR.mode==='seri')trenReveal(s.end,true)});
+  segment('segTren',[['seri','Linimasa'],['tahun','Tumpuk per tahun']],()=>TR.mode,v=>{TR.mode=v;trenRender(false);segment('segTren',[['seri','Linimasa'],['tahun','Tumpuk per tahun']],()=>TR.mode,arguments.callee)});
+  scrolly('sc-tren',steps,(i,s)=>{if(!s.free&&TR.mode!=='seri'){TR.mode='seri';trenRender(false)}else if(s.free){}
+    if(TR.mode==='seri')trenReveal(s.end,true);trenSeg()});
   trenRender(false);watch($('#trenChart'),()=>trenRender(false));
 }
 function trenSeg(){segment('segTren',[['seri','Linimasa'],['tahun','Tumpuk per tahun']],()=>TR.mode,v=>{TR.mode=v;if(v==='seri'&&!TR.end)TR.end=new Date(2025,11,1);trenRender(false);trenSeg()})}
@@ -128,12 +127,10 @@ function trenRender(anim){
     const x=d3.scalePoint().domain(d3.range(12)).range([m.l,W-m.r]).padding(.3);
     svg.append('g').attr('class','ax').attr('transform',`translate(0,${H-m.b})`).call(d3.axisBottom(x).tickFormat(i=>MON[i]).tickSize(0));
     const yrs=d3.range(2019,2026),col=d3.scaleOrdinal(yrs,yrs.map((_,i)=>d3.interpolateViridis(i/(yrs.length-1)*.92)));
-    const lab=yrs.map(yy=>{const rows=R.filter(r=>r.t.getFullYear()===yy),l=rows[rows.length-1];return {yy,y:y(l.wisman),x:x(l.t.getMonth())}}).sort((a,b)=>a.y-b.y);
-    lab.forEach((l,i)=>{if(i&&l.y-lab[i-1].y<13)l.y=lab[i-1].y+13});
     yrs.forEach((yy,i)=>{const rows=R.filter(r=>r.t.getFullYear()===yy);
       svg.append('path').datum(rows).attr('fill','none').attr('stroke',col(yy)).attr('stroke-width',yy===2019||yy===2025?3:2).attr('stroke-dasharray',['','6 3','2 3','8 3 2 3','','6 3','2 3'][i]).attr('stroke-linejoin','round')
         .attr('d',d3.line().x(r=>x(r.t.getMonth())).y(r=>y(r.wisman)));
-      const L=lab.find(l=>l.yy===yy);svg.append('text').attr('x',L.x+7).attr('y',L.y).attr('dy','0.35em').attr('font-size',fs).style('font-weight',700).style('fill',col(yy)).text(yy)});
+      const last=rows[rows.length-1];svg.append('text').attr('x',x(last.t.getMonth())+7).attr('y',y(last.wisman)).attr('dy','0.35em').attr('font-size',fs).style('font-weight',700).style('fill',col(yy)).text(yy)});
     foc.append('line').attr('y1',m.t).attr('y2',H-m.b).attr('stroke','var(--mute)');
     svg.append('rect').attr('x',m.l).attr('y',m.t).attr('width',W-m.l-m.r).attr('height',H-m.b-m.t).attr('fill','none').attr('pointer-events','all')
       .on('pointermove',ev=>{const mx=d3.pointer(ev)[0];let best=0,bd=1e9;d3.range(12).forEach(i=>{const dd=Math.abs(x(i)-mx);if(dd<bd){bd=dd;best=i}});
@@ -153,7 +150,7 @@ function trenRender(anim){
   // garis patokan: rata-rata bulanan 2019
   const ya=y(TR.avg19);
   svg.append('line').attr('x1',m.l).attr('x2',W-m.r).attr('y1',ya).attr('y2',ya).attr('stroke','var(--terra)').attr('stroke-dasharray','5 4').attr('stroke-width',1.6);
-  svg.append('text').attr('x',x(new Date(2021,0,1))).attr('y',ya-7).attr('text-anchor','middle').attr('font-size',fs-.5).style('fill','var(--terra)').style('font-weight',700).text(`Rata-rata bulanan 2019: ${ribu(TR.avg19)}`);
+  svg.append('text').attr('x',W-m.r).attr('y',ya-6).attr('text-anchor','end').attr('font-size',fs-.5).style('fill','var(--terra)').style('font-weight',700).text(`Rata-rata bulanan 2019: ${ribu(TR.avg19)}`);
   const body=svg.append('g').attr('clip-path',`url(#${uid})`);
   body.append('path').datum(R).attr('fill','var(--sun)').attr('opacity',.18).attr('d',d3.area().x(r=>x(r.t)).y0(H-m.b).y1(r=>y(r.wisman)));
   body.append('path').datum(R).attr('fill','none').attr('stroke','var(--ink)').attr('stroke-width',2.4).attr('stroke-linejoin','round').attr('d',d3.line().x(r=>x(r.t)).y(r=>y(r.wisman)));
@@ -202,6 +199,7 @@ function petaInit(world){
     mkStep(['Eropa'],'Terbang belasan jam','Salam dari Eropa!'),
     mkStep(['Amerika','Timur Tengah','Afrika'],'Tiga kawasan yang lebih jauh'),
     {t:'Giliranmu memilih',sel:[],stamp:['Indonesia'],p:`Tombol kawasan di atas peta bisa dipilih lebih dari satu. Arahkan kursor ke bendera atau garis untuk melihat angkanya. Titik putus-putus bukan negara, melainkan titik tengah wilayah (misalnya "Eropa Timur Lainnya").`,free:true}];
+  segment('petaChips',[],()=>0,()=>0);
   petaChips();
   scrolly('sc-peta',steps,(i,s)=>{MP.sel=new Set(s.sel);petaChips();petaUpdate(true)});
   petaRender();watch($('#petaChart'),petaRender);
@@ -218,10 +216,8 @@ function petaRender(){
   const W=mapEl.clientWidth,H=mapEl.clientHeight;if(!W||!H)return;
   const mob=W<560,P=PIN;
   const proj=d3.geoNaturalEarth1().rotate([-60,0]);
-  proj.fitWidth(W-8,{type:'Sphere'});
-  const yTop=proj([60,80])[1],yBot=proj([60,-56])[1];
-  const hMap=yBot-yTop;if(hMap>H-8){proj.scale(proj.scale()*(H-8)/hMap)}
-  {const a=proj([60,80])[1],b=proj([60,-56])[1],t=proj.translate();proj.translate([W/2,t[1]+((H-(b-a))/2-a)])}
+  proj.fitSize([W-8,(H-8)*1.18],{type:'Sphere'});
+  const top=proj([60,80])[1];const tr=proj.translate();proj.translate([tr[0]+4,tr[1]+(8-top)]);
   const path=d3.geoPath(proj);
   const svg=d3.select(mapEl).append('svg').attr('viewBox',[0,0,W,H]).attr('role','img').attr('aria-label','Peta dunia dengan busur dari negara asal wisatawan ke pintu masuk Indonesia');
   svg.append('path').datum(MP.world).attr('d',path).attr('fill','#E7DCC4').attr('stroke','#fff').attr('stroke-width',.6);
@@ -268,7 +264,7 @@ function petaUpdate(anim){
   tr(B.svg.selectAll('.arc')).attr('stroke-opacity',d=>sel.size?(on(d.kawasan)?.7:.04):.42);
   tr(B.svg.selectAll('g.o')).style('opacity',d=>on(d.reg)?1:.16);
   // label hanya untuk pilihan terbesar
-  const vis=B.nodes.filter(d=>on(d.reg)).sort((a,b)=>b.v-a.v).slice(0,3).map(d=>d.negara);
+  const vis=B.nodes.filter(d=>on(d.reg)).sort((a,b)=>b.v-a.v).slice(0,sel.size?6:4).map(d=>d.negara);
   B.svg.selectAll('.olab').style('opacity',d=>vis.includes(d.negara)?1:0);
   // pesawat di sepanjang busur terbesar
   B.gpl.selectAll('*').remove();
@@ -296,7 +292,7 @@ function skLayout(view,W,H){
     nodes=[...ng.map(n=>({id:'n:'+n,label:n,color:WARNA[view],side:'L',flag:ISO[n]?flagSrc(n):null})),...pid.map(i=>({id:'p:'+i,label:PIN[i].nama_pendek,color:PINTU_C,side:'R'}))];
     links=rows.map(r=>({source:'n:'+r.negara,target:'p:'+r.pintu,value:r.nilai,color:WARNA[view]}));
   }
-  const m={t:6,b:6,l:mob?(view==='semua'?82:112):(view==='semua'?110:150),r:mob?100:Math.min(196,Math.max(166,W*.26))};
+  const m={t:6,b:6,l:mob?(view==='semua'?82:112):(view==='semua'?110:150),r:mob?100:Math.min(176,Math.max(130,W*.22))};
   const nL=nodes.filter(n=>n.side==='L').length,nR=nodes.length-nL;
   const pad=Math.max(3,Math.min(13,H*.45/Math.max(nL,nR)));
   const sk=d3.sankey().nodeId(d=>d.id).nodeAlign(d3.sankeyLeft).nodeWidth(12).nodePadding(pad).nodeSort((a,b)=>b.value-a.value).extent([[m.l,m.t],[W-m.r,H-m.b]]);
@@ -381,7 +377,7 @@ function odRender(anim){
   const K=D.kawasan,P=D.pintu,V=new Map();D.links.forEach(l=>{const k=l.kawasan+'|'+l.pintu;V.set(k,(V.get(k)||0)+l.nilai)});
   const raw=(k,p)=>V.get(k.id+'|'+p.id)||0,rt=Object.fromEntries(K.map(k=>[k.id,sumBy(P,p=>raw(k,p))]));
   const val=(k,p)=>OD.mode==='jml'?raw(k,p):(rt[k.id]?raw(k,p)/rt[k.id]*100:0);
-  const mob=W<560,m={t:mob?100:128,r:mob?36:56,b:4,l:mob?80:116},cw=(W-m.l-m.r)/P.length,ch=Math.min(46,(H-m.t-m.b)/K.length);
+  const mob=W<560,m={t:mob?96:112,r:mob?36:56,b:4,l:mob?80:116},cw=(W-m.l-m.r)/P.length,ch=Math.min(46,(H-m.t-m.b)/K.length);
   const cells=K.flatMap((k,i)=>P.map((p,j)=>({k,p,i,j,v:val(k,p),r:raw(k,p),key:k.id+'|'+p.id}))),mx=d3.max(cells,c=>c.v)||1;
   const col=d3.scaleSequentialSqrt(d3.interpolateViridis).domain([0,mx]);
   const short=v=>OD.mode==='pangsa'?fmt1.format(v)+'%':v>=1e6?fmt1.format(v/1e6)+' jt':v>=1e3?Math.round(v/1e3)+' rb':String(Math.round(v));
@@ -392,7 +388,7 @@ function odRender(anim){
   svg.select('.kl').selectAll('text').data(K,k=>k.id).join('text').attr('x',m.l-6).attr('y',(k,i)=>m.t+i*ch+ch/2).attr('dy','0.35em').attr('text-anchor','end').attr('font-size',mob?10.5:12.5)
     .style('font-weight',k=>OD.rows.includes(k.id)?700:400).transition().duration(dur).style('opacity',k=>rowOn(k)?1:.3).text(k=>k.nama);
   svg.select('.pl').selectAll('text').data(P,p=>p.id).join('text').attr('transform',(p,j)=>`translate(${m.l+j*cw+cw/2},${m.t-6}) rotate(-50)`).attr('font-size',mob?9.5:11)
-    .style('font-weight',p=>OD.cols.includes(p.id)?700:400).transition().duration(dur).style('opacity',p=>colOn(p)?1:.3).text(p=>mob?p.nama_pendek.replace(/ \(.*\)$/,'').slice(0,14):p.nama_pendek.slice(0,26));
+    .style('font-weight',p=>OD.cols.includes(p.id)?700:400).transition().duration(dur).style('opacity',p=>colOn(p)?1:.3).text(p=>mob?p.nama_pendek.replace(/ \(.*\)$/,'').slice(0,14):p.nama_pendek.slice(0,22));
   const g=svg.select('.cl').selectAll('g.c').data(cells,c=>c.key).join(e=>{const n=e.append('g').attr('class','c');n.append('rect').attr('rx',2);n.append('text').attr('text-anchor','middle').attr('dy','0.35em').style('pointer-events','none');return n});
   g.select('rect').attr('x',c=>m.l+c.j*cw+1).attr('y',c=>m.t+c.i*ch+1).attr('width',Math.max(1,cw-2)).attr('height',ch-2)
     .on('pointermove',(ev,c)=>showTip(ev,`<b>${c.k.nama} → ${c.p.nama_pendek}</b><br>${num(c.r)} kunjungan<br>${pct(c.r,rt[c.k.id]||1)} dari kunjungan kawasan ini`)).on('pointerleave',hideTip)
@@ -449,15 +445,13 @@ function hRender(){
     else{const s=document.createElement('span');s.className='now';s.textContent=n+` (${fmt1.format(cur.value/1e3)} triliun)`;cb.append(s)}});
   const go=p=>{HPATH=p;hRender()},tw=$('#treemap'),W=tw.clientWidth,Ht=tw.clientHeight,mob=W<560;tw.innerHTML='';
   if(W&&Ht){
-    /* d3.treemap hanya valid dari akar (kedalaman 0), jadi simpul turunan dibangun ulang sebagai akar baru */
-    const sub=cur.depth?hGrow(d3.hierarchy(cur.data).sum(d=>d.v24||0).sort((a,b)=>b.value-a.value)):cur;
-    if(sub.children){
-      d3.treemap().size([W,Ht]).paddingInner(2).round(true)(sub);
+    if(cur.children){
+      d3.treemap().size([W,Ht]).paddingInner(2).round(true)(cur);
       const svg=d3.select(tw).append('svg').attr('viewBox',[0,0,W,Ht]).attr('role','img').attr('aria-label','Treemap PDRB: '+cur.data.name);
-      const g=svg.selectAll('g').data(sub.children).join('g');
+      const g=svg.selectAll('g').data(cur.children).join('g');
       g.append('rect').attr('x',d=>d.x0).attr('y',d=>d.y0).attr('width',d=>d.x1-d.x0).attr('height',d=>d.y1-d.y0).attr('fill',d=>hFill(d)).attr('stroke',d=>isI(d)?HI:'none').attr('stroke-width',3)
         .attr('data-d',d=>d.children?1:null).attr('tabindex',d=>d.children?0:null)
-        .on('pointermove',(ev,d)=>showTip(ev,hTip(sub,d)+(d.children?'<br><i>Klik untuk rincian</i>':''))).on('pointerleave',hideTip)
+        .on('pointermove',(ev,d)=>showTip(ev,hTip(cur,d)+(d.children?'<br><i>Klik untuk rincian</i>':''))).on('pointerleave',hideTip)
         .on('click',(ev,d)=>d.children&&go([...HPATH,d.data.name])).on('keydown',(ev,d)=>{if(d.children&&ev.key==='Enter')go([...HPATH,d.data.name])});
       g.append('text').attr('x',d=>d.x0+5).attr('y',d=>d.y0+15).attr('font-size',mob?10:12).style('fill',d=>hTxt(d)).style('pointer-events','none')
         .text(d=>{const w=d.x1-d.x0,h=d.y1-d.y0;return(w<46||h<18)?'':d.data.name.slice(0,Math.floor(w/6.4))});
@@ -483,7 +477,6 @@ function hierInit(d){
   HD=d;
   $('#hNote').innerHTML=`Jumlah 38 provinsi, bukan PDB nasional. ${d.meta.catatan_angka}. Satuan: triliun rupiah, atas dasar harga konstan (ADHK), sehingga porsi antarsektor tidak persis sama dengan struktur nominal (ADHB).`;
   $('#srcH').innerHTML=sumber(d.meta,d.meta.judul,'pdrb');
-  document.querySelectorAll('[data-src=pdrb]').forEach(e=>e.innerHTML=sumber(d.meta,d.meta.judul,'pdrb'));
   const I=d.kategori.findIndex(c=>c.kode==='I'),Ip=d.kategori[I].pendek,y=HY;
   const tot=sumBy(d.data,r=>r[y]),iT=sumBy(d.data.filter(r=>r[1]===I),r=>r[y]);
   const share=pi=>sumBy(d.data.filter(r=>r[0]===pi&&r[1]===I),r=>r[y])/sumBy(d.data.filter(r=>r[0]===pi),r=>r[y])*100;
@@ -498,7 +491,7 @@ function hierInit(d){
     {t:'Bali, kamar dan meja makan',u:'wilayah',path:['Bali & Nusa Tenggara','Bali'],stamp:['Indonesia'],p:`Di Bali, akomodasi dan makan minum menyumbang <b>${fmt1.format(bali)}%</b> PDRB provinsinya, ${bali>nas?'di atas':'di bawah'} rata-rata 38 provinsi (${fmt1.format(nas)}%). Garis tepi oranye menandai sektornya.`,hand:'Pintu masuknya Ngurah Rai, kamarnya di sini.'},
     {t:'Ganti sudut pandang',u:'sektor',path:[Ip],stamp:['Indonesia'],p:`Sekarang kita mulai dari sektornya. Akomodasi dan makan minum bernilai ${fmt1.format(iT/1e3)} triliun, ${fmt1.format(nas)}% dari jumlah PDRB. Wilayah terbesar untuk sektor ini: ${iBy[0][0]} (${pct(iBy[0][1],iT,0)}). Provinsi dengan pangsa sektor tertinggi: ${provShare.slice(0,3).map(s=>`${s.n} (${fmt1.format(s.v)}%)`).join(', ')}.`},
     {t:'Giliranmu menjelajah',u:'wilayah',path:[],free:true,stamp:['Indonesia'],p:`Klik kotak mana pun untuk masuk lebih dalam, pakai breadcrumb untuk kembali, dan ganti urutan hierarki dengan tombol di atas. Tampilan icicle di bawah mengikuti pilihanmu.`}];
-  hRender();watch($('#treemap'),hRender);let ht;addEventListener('resize',()=>{clearTimeout(ht);ht=setTimeout(hRender,200)});
+  hRender();watch($('#treemap'),hRender);watch($('#icicle'),hRender);
   scrolly('sc-hier',steps,(i,s)=>{HU=s.u;HPATH=s.path;hRender()});
 }
 
@@ -518,10 +511,10 @@ function frekRender(anim){
   const dur=anim&&!RM?600:0,mob=W<560;
   if(TM==='awan'){
     host.innerHTML='';
-    const rows=TK.frek[TP],sz=d3.scaleSqrt().domain([0,d3.max(rows,r=>r.per10rb)]).range([12,mob?32:46]);
+    const rows=TK.frek[TP],sz=d3.scaleSqrt().domain([0,d3.max(rows,r=>r.per10rb)]).range([13,mob?40:56]);
     const svg=d3.select(host).append('svg').attr('viewBox',[0,0,W,H]).attr('role','img').attr('aria-label','Awan kata paling sering, periode '+perLabel(TP));
     if(!d3.layout||!d3.layout.cloud){host.textContent='Awan kata butuh pustaka d3-cloud yang gagal dimuat.';return}
-    d3.layout.cloud().size([W*.96,H*.94]).words(rows.map(r=>({text:r.kata,size:sz(r.per10rb),v:r.per10rb,dok:r.dok}))).padding(4).rotate((d,i)=>(i%6===4&&d.size<30)?90:0).font('DM Sans').fontWeight(700).fontSize(d=>d.size)
+    d3.layout.cloud().size([W,H]).words(rows.map(r=>({text:r.kata,size:sz(r.per10rb),v:r.per10rb,dok:r.dok}))).padding(4).rotate((d,i)=>i%6===4?90:0).font('DM Sans').fontWeight(700).fontSize(d=>d.size)
       .on('end',ws=>{const g=svg.append('g').attr('transform',`translate(${W/2},${H/2})`);
         g.selectAll('text').data(ws).join('text').attr('text-anchor','middle').attr('font-family','DM Sans, system-ui, sans-serif').attr('font-weight',700).attr('font-size',d=>d.size)
           .attr('transform',d=>`translate(${d.x},${d.y}) rotate(${d.rotate})`).style('fill',(d,i)=>i<3?'var(--terra)':'var(--ink)').style('opacity',0).text(d=>d.text)
@@ -578,32 +571,42 @@ function setW(a){TW=a;$('#kataInput').value=a.join(', ');kataRender()}
 function bigramRender(){
   const el=$('#bigramChart');el.innerHTML='';const W=el.clientWidth,H=el.clientHeight;if(!W||!H)return;
   const g=TK.bigram[TP],mob=W<560,nodes=g.nodes.map(d=>({...d})),links=g.links.map(d=>({...d}));
-  const r=d3.scaleSqrt().domain([0,d3.max(nodes,d=>d.bobot)]).range([4,mob?11:15]),sw=d3.scaleLinear().domain(d3.extent(links,d=>d.value)).range([1.2,6]);
-  /* gravitasi ke tengah supaya kelompok kata kecil tidak terlempar ke tepi; tabrakan diperbesar agar titik tidak menumpuk */
-  const sim=d3.forceSimulation(nodes).force('link',d3.forceLink(links).id(d=>d.id).distance(mob?34:52).strength(.75))
-    .force('charge',d3.forceManyBody().strength(mob?-120:-190)).force('x',d3.forceX(W/2).strength(.09)).force('y',d3.forceY(H/2).strength(.13))
-    .force('collide',d3.forceCollide(d=>r(d.bobot)+(mob?8:11))).stop();
-  for(let i=0;i<500;i++)sim.tick();
-  const mx=mob?34:60,my=26;
-  nodes.forEach(d=>{d.x=Math.max(mx,Math.min(W-mx,d.x));d.y=Math.max(my+8,Math.min(H-my,d.y))});
+  const n=nodes.length,fs=mob?10:12,lh=fs+3,cw=fs*.58;
+  const r=d3.scaleSqrt().domain([0,d3.max(nodes,d=>d.bobot)]).range([3,mob?10:14]),sw=d3.scaleLinear().domain(d3.extent(links,d=>d.value)).range([1,6]);
+  const med=d3.median(nodes,d=>d.bobot);
+  /* tiap titik membawa kotak label sendiri; pada layar sempit hanya titik besar yang diberi label */
+  nodes.forEach((d,i)=>{d.r=r(d.bobot);d.lab=!mob||d.bobot>=med;d.w=d.lab?Math.max(d.r*2,d.id.length*cw+6):d.r*2;d.lh=d.lab?lh:0;
+    const a=i*2.399963,rad=Math.sqrt((i+.5)/n)*Math.min(W,H)*.42;d.x=W/2+Math.cos(a)*rad*(W/H>1?1.5:1);d.y=H/2+Math.sin(a)*rad});
+  const pad=6,k=Math.sqrt(W*H/n);
+  /* tarikan antartitik: kotak (titik + label) tidak boleh saling menimpa */
+  const boxes=()=>{let ns;const f=al=>{for(let i=0;i<ns.length;i++)for(let j=i+1;j<ns.length;j++){const A=ns[i],B=ns[j],dx=B.x-A.x,dy=B.y-A.y,
+      ox=(A.w+B.w)/2+pad-Math.abs(dx),oy=Math.min(A.y+A.r,B.y+B.r)-Math.max(A.y-A.r-A.lh,B.y-B.r-B.lh)+pad;
+      if(ox>0&&oy>0){if(ox<oy){const s=ox*.5*(dx>=0?1:-1);A.x-=s;B.x+=s}else{const s=oy*.5*(dy>=0?1:-1);A.y-=s;B.y+=s}}}};
+    f.initialize=a=>ns=a;return f};
+  const keep=()=>{let ns;const f=()=>{ns.forEach(d=>{d.x=Math.max(d.w/2+4,Math.min(W-d.w/2-4,d.x));d.y=Math.max(d.r+d.lh+4,Math.min(H-d.r-4,d.y))})};f.initialize=a=>ns=a;return f};
+  const uniq=[...d3.rollup(links,v=>d3.sum(v,l=>l.value),l=>[l.source,l.target].sort().join('|'))].map(([key,value])=>({source:key.split('|')[0],target:key.split('|')[1],value}));
+  const sim=d3.forceSimulation(nodes).alphaDecay(.012)
+    .force('link',d3.forceLink(uniq).id(d=>d.id).distance(k*.5).strength(.55))
+    .force('charge',d3.forceManyBody().strength(-k*1.6).distanceMax(k*4))
+    .force('x',d3.forceX(W/2).strength(.05)).force('y',d3.forceY(H/2).strength(.07))
+    .force('box',boxes()).force('keep',keep()).stop();
+  for(let i=0;i<700;i++)sim.tick();
+  /* penempatan label: coba di atas, lalu di bawah; label yang tetap menabrak disembunyikan (nilainya tetap muncul di tooltip) */
+  const placed=[],hit=(a,b)=>a.x0<b.x1&&a.x1>b.x0&&a.y0<b.y1&&a.y1>b.y0;
+  const circ=nodes.map(d=>({x0:d.x-d.r,x1:d.x+d.r,y0:d.y-d.r,y1:d.y+d.r}));
+  [...nodes].sort((a,b)=>b.bobot-a.bobot).forEach(d=>{d.show=false;if(!d.lab)return;const w=d.id.length*cw;
+    for(const pos of ['up','down']){const y1=pos==='up'?d.y-d.r-2:d.y+d.r+2+lh-3,b={x0:d.x-w/2,x1:d.x+w/2,y0:y1-lh+3,y1};
+      if(b.x0<2||b.x1>W-2||b.y0<2||b.y1>H-2)continue;
+      if(placed.some(p=>hit(p,b))||circ.some((c,i)=>nodes[i]!==d&&hit(c,b)))continue;
+      d.show=true;d.ly=pos==='up'?d.y-d.r-4:d.y+d.r+lh-3;placed.push(b);break}});
   const svg=d3.select(el).append('svg').attr('class','fadein').attr('viewBox',[0,0,W,H]).attr('role','img').attr('aria-label','Jaringan pasangan kata berurutan, periode '+perLabel(TP));
-  svg.append('g').selectAll('line').data(links).join('line').attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y).style('stroke','var(--mute)').attr('stroke-opacity',.45).attr('stroke-width',d=>sw(d.value))
-    .on('pointermove',(ev,d)=>showTip(ev,`<b>${d.source.id} → ${d.target.id}</b><br>${fmt.format(d.value)} kali`)).on('pointerleave',hideTip);
-  svg.append('g').selectAll('circle').data(nodes).join('circle').attr('cx',d=>d.x).attr('cy',d=>d.y).attr('r',d=>r(d.bobot)).style('fill','var(--teal)').attr('fill-opacity',.88).attr('stroke','var(--paper)').attr('stroke-width',1.5)
+  const byId=new Map(nodes.map(d=>[d.id,d]));
+  svg.append('g').selectAll('line').data(links).join('line').attr('x1',d=>byId.get(d.source).x).attr('y1',d=>byId.get(d.source).y).attr('x2',d=>byId.get(d.target).x).attr('y2',d=>byId.get(d.target).y).style('stroke','var(--mute)').attr('stroke-opacity',.4).attr('stroke-width',d=>sw(d.value))
+    .on('pointermove',(ev,d)=>showTip(ev,`<b>${d.source} → ${d.target}</b><br>${fmt.format(d.value)} kali`)).on('pointerleave',hideTip);
+  svg.append('g').selectAll('circle').data(nodes).join('circle').attr('cx',d=>d.x).attr('cy',d=>d.y).attr('r',d=>d.r).style('fill','var(--teal)').attr('fill-opacity',.9)
     .on('pointermove',(ev,d)=>showTip(ev,`<b>${d.id}</b><br>keterhubungan ${fmt.format(d.bobot)}`)).on('pointerleave',hideTip);
-  /* label: tempatkan dari kata terpenting; lewati yang menabrak label atau titik lain */
-  const fs=mob?10.5:12,cw=fs*.58,placed=[],hit=(a,b)=>!(a.x2<b.x1||a.x1>b.x2||a.y2<b.y1||a.y1>b.y2);
-  const circ=nodes.map(d=>({x1:d.x-r(d.bobot),x2:d.x+r(d.bobot),y1:d.y-r(d.bobot),y2:d.y+r(d.bobot)}));
-  const labs=[];
-  [...nodes].sort((a,b)=>b.bobot-a.bobot).forEach(d=>{const w=d.id.length*cw+4,h=fs+2,rr=r(d.bobot)+3;
-    const cands=[{x:d.x,y:d.y-rr-2,a:'middle',bx:d.x-w/2,by:d.y-rr-h},{x:d.x,y:d.y+rr+h-2,a:'middle',bx:d.x-w/2,by:d.y+rr},
-      {x:d.x+rr+2,y:d.y+fs*.35,a:'start',bx:d.x+rr,by:d.y-h/2},{x:d.x-rr-2,y:d.y+fs*.35,a:'end',bx:d.x-rr-w,by:d.y-h/2}];
-    for(const c of cands){const bb={x1:c.bx,x2:c.bx+w,y1:c.by,y2:c.by+h};
-      if(bb.x1<2||bb.x2>W-2||bb.y1<2||bb.y2>H-2)continue;
-      if(placed.some(p=>hit(p,bb))||circ.some((q,i)=>nodes[i]!==d&&hit(q,bb)))continue;
-      placed.push(bb);labs.push({t:d.id,x:c.x,y:c.y,a:c.a});break}});
-  svg.append('g').selectAll('text').data(labs).join('text').attr('x',d=>d.x).attr('y',d=>d.y).attr('text-anchor',d=>d.a).attr('font-size',fs).style('font-weight',600).style('pointer-events','none')
-    .style('paint-order','stroke').style('stroke','var(--paper)').attr('stroke-width',3.5).text(d=>d.t);
+  svg.append('g').selectAll('text').data(nodes.filter(d=>d.show)).join('text').attr('class','blab').attr('x',d=>d.x).attr('y',d=>d.ly).attr('text-anchor','middle').attr('font-size',fs).style('font-weight',600).style('pointer-events','none')
+    .style('paint-order','stroke').style('stroke','var(--paper)').attr('stroke-width',3.5).text(d=>d.id);
 }
 function teksInit(frek,khas,tren,bigram,meta){
   TK={frek,khas,tren,bigram,meta};
@@ -624,7 +627,7 @@ function teksInit(frek,khas,tren,bigram,meta){
   const steps=[
     {t:'Sebelum pandemi',tp:'1_pra_pandemi',tm:'frek',p:`Di ${nd('1_pra_pandemi')} BRS pra-pandemi, lima kata paling sering: ${listID(frek['1_pra_pandemi'].slice(0,5).map(r=>`"${r.kata}"`))}. "Penumpang" berada di peringkat ${rank('1_pra_pandemi','penumpang')}, tanda laporan masih memuat angkutan.`,stamp:['Indonesia']},
     {t:'Saat pandemi',tp:'2_pandemi',tm:'khas',p:`Kata paling khas pandemi: ${listID(khasPer('2_pandemi'))}. Kosakatanya condong ke bandara dan angkutan udara, kemungkinan karena laporan saat itu masih mencampur data transportasi.`},
-    {t:'Masa pemulihan',tp:'3_pemulihan',tm:'khas',p:`Kata paling khas pemulihan: ${listID(khasPer('3_pemulihan'))}. "Perjalanan" muncul ${fmt.format(kp.per10rb)} kali per 10 ribu kata, sementara di periode lain nyaris nol (${fmt1.format(kp.per10rb_lain)}). ${khas['3_pemulihan'].some(r=>r.kata==='penumpang')?'':'"Penumpang" tidak ada di daftar kata paling khas periode ini.'}`,hand:'Kamus laporannya ganti halaman.'},
+    {t:'Masa pemulihan',tp:'3_pemulihan',tm:'khas',p:`Kata paling khas pemulihan: ${listID(khasPer('3_pemulihan'))}. "Perjalanan" muncul ${fmt.format(kp.per10rb)} kali per 10 ribu kata, sementara di periode lain nyaris nol (${fmt1.format(kp.per10rb_lain)}). "Penumpang" justru tidak lagi masuk daftar.`,hand:'Kamus laporannya ganti halaman.'},
     {t:'Dalam bentuk awan',tp:'3_pemulihan',tm:'awan',p:`Awan kata periode pemulihan: makin besar tulisan, makin sering kata itu dipakai. Ganti periode atau ukuran dengan tombol di atas grafik.`},
     {t:'Giliranmu menjelajah',tp:'3_pemulihan',tm:'frek',free:true,p:`Semua tombol di atas grafik tetap bisa dipakai. Arahkan kursor ke batang untuk melihat jumlah dokumen yang memuat kata itu.`}];
   teksSegs();frekRender(false);watch($('#frekChart'),()=>frekRender(false));
@@ -648,6 +651,58 @@ function teksInit(frek,khas,tren,bigram,meta){
 }
 
 /* =====================================================================
+   6. KESIMPULAN (semua angka dihitung ulang dari data yang sama dengan bagian 1-5)
+   ===================================================================== */
+function kesimpulanInit(){
+  const T=D.meta.total,t=TR.t,bl=ym=>`${MONF[+ym.slice(5)-1]} ${ym.slice(0,4)}`,nm=id=>PIN[id].nama_pendek,isAir=p=>p.kategori.startsWith('Bandara');
+  const air=D.pintu.filter(isAir).sort((a,b)=>b.total-a.total)[0];
+  const named=D.pintu.filter(p=>p.provinsi).sort((a,b)=>b.total-a.total),top3=named.slice(0,3),top3S=sumBy(top3,p=>p.total);
+  /* gerbang terbesar tiap kawasan (tanpa "pintu lainnya") */
+  const kawTop=D.kawasan.map(k=>{const l=D.links.filter(x=>x.kawasan===k.id&&x.pintu!=='pintu_lainnya').sort((a,b)=>b.nilai-a.nilai)[0];return {id:k.id,pin:l.pintu,s:l.nilai/k.total}}).sort((a,b)=>b.s-a.s);
+  const hi=kawTop[0],lo=kawTop[kawTop.length-1];
+  const as=D.kawasan.find(k=>k.id==='ASEAN'),asNon=sumBy(D.links.filter(l=>l.kawasan==='ASEAN'&&PIN[l.pintu]&&PIN[l.pintu].kategori!=='Campuran'&&!isAir(PIN[l.pintu])),l=>l.nilai);
+  const far=['Eropa','Amerika','Oseania'],farTot=sumBy(D.kawasan.filter(k=>far.includes(k.id)),k=>k.total),farAir=sumBy(D.links.filter(l=>far.includes(l.kawasan)&&PIN[l.pintu]&&isAir(PIN[l.pintu])),l=>l.nilai);
+  /* PDRB akomodasi dan makan minum */
+  const I=HD.kategori.findIndex(c=>c.kode==='I'),natS=sumBy(HD.data.filter(r=>r[1]===I),r=>r[3])/sumBy(HD.data,r=>r[3])*100;
+  const secS=pi=>sumBy(HD.data.filter(r=>r[0]===pi&&r[1]===I),r=>r[3])/sumBy(HD.data.filter(r=>r[0]===pi),r=>r[3])*100;
+  const rk=HD.provinsi.map((n,i)=>({n,v:secS(i)})).sort((a,b)=>b.v-a.v),rkOf=n=>rk.findIndex(x=>x.n===n)+1,shOf=n=>(rk.find(x=>x.n===n)||{}).v;
+  /* kata BPS */
+  const K=TK.tren,fl=(w,first)=>{const v=K.kata[w];if(!v)return null;const i=first?v.findIndex(x=>x>0):v.map(x=>x>0).lastIndexOf(true);return i<0?null:K.bulan[i]};
+  const topPair=id=>[...TK.bigram[id].links].sort((a,b)=>b.value-a.value)[0],p1=topPair('1_pra_pandemi'),p3=topPair('3_pemulihan');
+  const t19=t[2019],t20=t[2020],t24=t[2024],t25=t[2025];
+  $('#kesIntro').innerHTML=`Kita mulai dari satu angka: <b>${pct(air.total,T,0)}</b> kunjungan wisman 2024 masuk lewat ${air.nama_pendek}. Setelah mengikuti arusnya dari tiket, gerbang, rupiah, sampai kata-kata BPS, kesimpulannya begini: data pintu masuk memberi tahu <em>di mana wisman tiba</em>, bukan ke mana mereka pergi.`;
+  const cards=[
+    {t:'Pulih, tetapi belum penuh',d:'Naik-Turun',h:'naikturun',p:`Dari ${juta(t19)} kunjungan pada 2019, angkanya jatuh ke ${juta(t20)} pada 2020 (turun ${pct(t19-t20,t19,0)}). Tahun 2024 mencapai ${juta(t24)} (${pct(t24,t19,0)} dari 2019) dan 2025 ${juta(t25)} (${pct(t25,t19,0)}). ${t25<t19?'Pemulihannya hampir penuh, tetapi belum melampaui masa sebelum pandemi.':'Angkanya sudah melampaui masa sebelum pandemi.'}`},
+    {t:'Jarak ikut menentukan jenis pintu',d:'Asal Tamu',h:'asal',p:`ASEAN menyumbang ${pct(as.total,T,0)} kunjungan, dan <b>${pct(asNon,as.total,0)}</b> di antaranya masuk lewat pelabuhan laut atau pos lintas batas, bukan bandara. Sebaliknya, wisman Eropa, Amerika, dan Oseania setidaknya <b>${pct(farAir,farTot,0)}</b> mendarat di empat bandara besar.`},
+    {t:'Gerbangnya sedikit, tamunya banyak',d:'Pintu Gerbang',h:'gerbang',p:`${listID(top3.map(p=>p.nama_pendek))} menampung <b>${pct(top3S,T,0)}</b> kunjungan. Pola tiap kawasan berbeda: ${nm(hi.pin)} menerima ${pct(hi.s,1,0)} wisman ${hi.id}, sedangkan wisman ${lo.id} paling tersebar, gerbang terbesarnya, ${nm(lo.pin)}, hanya ${pct(lo.s,1,0)}.`},
+    {t:'Gerbang dan kamar di provinsi yang sama',d:'Rupiah',h:'rupiah',p:`Akomodasi dan makan minum hanya ${fmt1.format(natS)}% dari jumlah PDRB 38 provinsi, tetapi di ${rk[0].n} porsinya ${fmt1.format(rk[0].v)}% dan di ${rk[1].n} ${fmt1.format(rk[1].v)}%. Tabel di bawah membandingkan gerbang terbesar dengan pangsa sektor ini di provinsinya.`},
+    {t:'Laporan resminya ikut bergeser',d:'Kata BPS',h:'kata',p:`Pasangan kata teratas BRS pariwisata bergeser dari "${p1.source} ${p1.target}" (${fmt.format(p1.value)}) sebelum pandemi menjadi "${p3.source} ${p3.target}" (${fmt.format(p3.value)}) pada masa pemulihan. "Penumpang" terakhir muncul pada ${fl('penumpang')?bl(fl('penumpang')):'-'}, "perjalanan" mulai ${fl('perjalanan',true)?bl(fl('perjalanan',true)):'-'}. Dugaan kami, format laporan berubah, bukan hanya pilihan kata.`}];
+  $('#kesGrid').innerHTML=cards.map((c,i)=>`<article class="kes-card"><span class="pc-no">Temuan ${i+1} dari ${cards.length}</span><h3>${c.t}</h3><p>${c.p}</p><a class="dari" href="#${c.h}">Lihat di bagian ${c.d} →</a></article>`).join('');
+  $('#kesQuote').innerHTML='Pintu masuk menjawab <em>di mana wisman tiba</em>, bukan <em>ke mana mereka pergi</em>. Gerbang yang ramai belum tentu destinasi yang ramai.';
+  /* gerbang terbesar dibandingkan dengan pangsa PDRB akomodasi dan makan minum provinsinya */
+  const rows=named.slice(0,5).map(p=>({p,sh:p.total/T*100,sec:shOf(p.provinsi),rank:rkOf(p.provinsi)})),mx=d3.max(rows,r=>r.sh);
+  const best=d3.least(rows,r=>r.rank||99),worst=d3.greatest(rows,r=>r.rank||0),spread=worst.rank-best.rank;
+  $('#kesGerbang').innerHTML=`<h3>Lima gerbang terbesar dan kamar di provinsinya</h3>
+    <table class="kes-tbl"><thead><tr><th>Gerbang</th><th class="n">% wisman</th><th class="n">% PDRB sektor kamar &amp; makan</th><th class="n">Peringkat dari ${HD.provinsi.length}</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.p.nama_pendek}</td><td class="n">${fmt1.format(r.sh)}%<i class="kbar" style="width:${r.sh/mx*100}%"></i></td><td class="n">${r.sec==null?'-':fmt1.format(r.sec)+'%'}</td><td class="n">${r.rank||'-'}</td></tr>`).join('')}</tbody></table>
+    <p>${spread>=5?`Peringkat sektor kamar dan makan terentang dari ${best.rank} (${best.p.provinsi}) sampai ${worst.rank} (${worst.p.provinsi}). Gerbang besar tidak otomatis berarti provinsinya bertumpu pada sektor tamu, jadi gerbang tidak bisa dibaca sebagai destinasi.`:`Peringkat sektor kamar dan makan pada lima provinsi ini berdekatan (${best.rank} sampai ${worst.rank}), jadi pola gerbang dan destinasi tidak terlihat jelas di sini.`} Ini indikasi, bukan bukti: sektor tersebut juga melayani wisatawan nusantara dan pelaku bisnis.</p>`;
+  /* batas data dan cakupan waktu */
+  const unm=sumBy(D.pintu.filter(p=>p.lat==null),p=>p.total),R=TR.rows,diff=Math.abs(T-t24);
+  $('#kesBatas').innerHTML=`<h3>Cakupan waktu dan batas data</h3>
+    <table class="kes-tbl"><thead><tr><th>Bagian</th><th>Rentang data</th></tr></thead><tbody>
+    <tr><td>Asal Tamu, Pintu Gerbang</td><td>2024, satu tahun penuh (${juta(T)})</td></tr>
+    <tr><td>Naik-Turun</td><td>${bl(R[0].ym)} sampai ${bl(R[R.length-1].ym)}, bulanan</td></tr>
+    <tr><td>Rupiah</td><td>PDRB 2023 dan 2024 (ukuran 2024, warna pertumbuhan 2023 ke 2024)</td></tr>
+    <tr><td>Kata BPS</td><td>${bl(TK.meta.bulan_awal)} sampai ${bl(TK.meta.bulan_akhir)} (${TK.meta.n_dokumen} BRS)</td></tr></tbody></table>
+    <ul>
+      <li>Potret gerbang dan asal tamu memakai satu tahun, yaitu 2024, yang juga tahun terbaru pada data PDRB di sini. Tahun 2025 (${juta(t25)}) hanya hadir di tren, jadi gerbang dan asal tamu 2025 belum dibandingkan.</li>
+      <li>Data mencatat tempat wisman tiba, bukan tujuan akhir atau rute sesudahnya.</li>
+      <li>${pct(unm,T,0)} kunjungan (${juta(unm)}) masuk lewat perbatasan laut, perbatasan darat, atau pintu lainnya tanpa lokasi rinci, sehingga tidak tergambar di peta.</li>
+      <li>Total 2024 pada diagram aliran (${num(T)}) berbeda ${num(diff)} dari jumlah tabel bulanan (${num(t24)}). Sebabnya belum dikonfirmasi.</li>
+    </ul>`;
+  $('#kesSumber').innerHTML=`Sumber: BPS (Statistik Kunjungan Wisatawan Mancanegara 2024 dan 2025, PDRB provinsi menurut lapangan usaha 2020–2024, BRS pariwisata). Tidak ada data baru di bagian ini; semua angka dihitung ulang dari grafik di atas. Diakses: ${TGL}.`;
+}
+
+/* =====================================================================
    NAVIGASI: scroll-spy + progres
    ===================================================================== */
 function navInit(){
@@ -667,39 +722,7 @@ Promise.all([d3.json('data/aliran_wisman_2024.json'),d3.json('data/tren_wisman.j
   ...['frekuensi','khas','tren','bigram','meta'].map(n=>d3.json(`data/teks_${n}.json`)),d3.csv('data/koordinat_negara_asal.csv',r=>({negara:r.negara,kawasan:r.kawasan,lat:+r.lat,lon:+r.lon,jenis_titik:r.jenis_titik})),d3.json('data/dunia_110m.geojson')])
 .then(([aliran,tren,hier,frek,khas,tk,bigram,meta,coord,world])=>{
   D=aliran;PIN=Object.fromEntries(D.pintu.map(p=>[p.id,p]));coord.forEach(c=>COORD[c.negara]=c);MP.world=world;
-  hero();trenInit(tren);petaInit(world);sankeyInit();odInit();hierInit(hier);teksInit(frek,khas,tk,bigram,meta);kesimpulanInit();
+  hero();trenInit(tren);petaInit(world);sankeyInit();odInit();hierInit(hier);teksInit(frek,khas,tk,bigram,meta);
+  try{kesimpulanInit()}catch(e){console.error('kesimpulan',e)}
   window.__ready=true;
 }).catch(e=>{console.error(e);$('#heroLead').textContent='Gagal memuat data. Jalankan lewat server (mis. python -m http.server), bukan file://. '+e});
-/* =====================================================================
-   6. KESIMPULAN (semua angka dihitung dari data)
-   ===================================================================== */
-function kesimpulanInit(){
-  const T=D.meta.total,pin=[...D.pintu].sort((a,b)=>b.total-a.total),top=pin[0],top3=sumBy(pin.slice(0,3),p=>p.total);
-  const nTot=sortedEntries(group(D.negara,r=>r.negara,r=>r.nilai)),n3=sumBy(nTot.slice(0,3),x=>x[1]);
-  const t=TR.t,rec=t[2025]/t[2019]*100,low=TR.lo;
-  const I=HD.kategori.findIndex(c=>c.kode==='I'),y=HY;
-  const shr=pi=>sumBy(HD.data.filter(r=>r[0]===pi&&r[1]===I),r=>r[y])/sumBy(HD.data.filter(r=>r[0]===pi),r=>r[y])*100;
-  const bali=shr(HD.provinsi.indexOf('Bali')),nas=sumBy(HD.data.filter(r=>r[1]===I),r=>r[y])/sumBy(HD.data,r=>r[y])*100;
-  const nd=TK.meta.periode.reduce((a,p)=>a+p.n_dok,0);
-  $('#cLead').innerHTML=`Dari tiket sampai meja makan, datanya bercerita satu hal: wisatawan asing memang datang ke Indonesia, tetapi <b>pintu tempat mereka masuk tidak sama dengan tempat mereka tinggal dan berbelanja</b>.`;
-  $('#cFinds').innerHTML=[
-    `<b>Kedatangan sangat terkonsentrasi.</b> Pada 2024, ${top.nama_pendek} menerima ${pct(top.total,T,0)} dari ${juta(T)} kunjungan, dan tiga pintu teratas menerima ${pct(top3,T,0)}.`,
-    `<b>Asalnya lebih terpusat daripada kelihatannya.</b> Tiga negara asal teratas (${nTot.slice(0,3).map(x=>x[0]).join(', ')}) membawa ${pct(n3,T,0)} kunjungan.`,
-    `<b>${rec>=100?'Pemulihan sudah terlewati':'Pemulihan hampir tuntas'}.</b> Total 2025 mencapai ${fmt1.format(rec)}% dari total 2019, setelah titik terendah ${low.ym} (${fmt.format(low.wisman)} kunjungan sebulan).`,
-    `<b>Kamar dan meja makan paling terasa di Bali.</b> Akomodasi dan makan minum menyumbang ${fmt1.format(bali)}% PDRB Bali, dibanding ${fmt1.format(nas)}% rata-rata 38 provinsi. Ini korelasi, bukan bukti bahwa wisman penyebabnya.`,
-    `<b>Cara BPS bercerita ikut berubah.</b> Dari ${fmt.format(nd)} Berita Resmi Statistik dalam korpus, kosakata antarperiode bergeser dan kemungkinan mengikuti perubahan format laporan, bukan hanya perubahan kondisi pariwisata.`
-  ].map(s=>`<li>${s}</li>`).join('');
-  $('#cTitle').innerHTML=`Angka ${pct(top.total,T,0)} di ${top.nama_pendek} adalah angka <b>kedatangan</b>. Data BPS ini mencatat di mana wisman melintasi perbatasan, bukan ke mana mereka pergi, berapa malam menginap, atau berapa uang yang dibelanjakan. Karena itu bandara tersibuk tidak boleh otomatis dibaca sebagai destinasi terfavorit. Ia hanya menunjukkan di mana infrastruktur kedatangan paling dipakai. Judul kita mengingatkan jarak antara <i>pintu</i> dan <i>tujuan</i>.`;
-  $('#cLim').innerHTML=[
-    `Analisis gerbang, asal, dan PDRB memakai potret satu tahun (2024). Hanya tren bulanan (2019–2025) dan korpus BRS yang melintasi banyak tahun.`,
-    `Total kunjungan di edisi 2024 dan 2025 sedikit berbeda (13.902.420 pada edisi 2024 dibanding 13.886.678 pada edisi 2025 untuk tahun yang sama), sehingga angka dua edisi tidak dicampur dalam satu hitungan.`,
-    `PDRB memakai harga konstan dan angka 2023–2024 masih sementara.`,
-    `Hubungan PDRB akomodasi dengan pintu masuk bersifat deskriptif, tidak menunjukkan sebab-akibat.`
-  ].map(s=>`<li>${s}</li>`).join('');
-  $('#cNext').innerHTML=[
-    `Menggabungkan data lama tinggal, pengeluaran, dan tujuan perjalanan wisman untuk melihat destinasi yang sebenarnya.`,
-    `Menambahkan data pintu masuk 2025 per kebangsaan agar potret gerbang ikut bergerak.`,
-    `Membandingkan pola kosakata BRS dengan angka kunjungan bulanan secara formal.`
-  ].map(s=>`<li>${s}</li>`).join('');
-}
-

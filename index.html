@@ -38,27 +38,25 @@
       <div class="art">
         <div class="hero-title">
           <p class="eyebrow">Selamat datang di Nusantara</p>
-          <h1>Welcome<br>to <em>Indonesia</em></h1>
+          <h1>Welcome to <em>Indonesia</em></h1>
+          <p class="tagline">Pintu masuk bukan destinasi.</p>
         </div>
-        <div class="scene-wrap">
-          <img class="scene" src="assets/indonesia_landscape.webp" width="2000" height="855" alt="Ilustrasi cat air lanskap Indonesia: sawah berundak, pura Bali, Gunung Bromo, Candi Borobudur, karang Raja Ampat, hutan hujan dengan orangutan, dan perahu phinisi">
-          <svg class="plane-layer" viewBox="0 0 2000 855" aria-hidden="true">
-            <path id="rutePesawat" d="M880 270 C1200 110 1560 120 1900 420" fill="none" stroke="#15303F" stroke-opacity=".45" stroke-width="4" stroke-dasharray="4 16" stroke-linecap="round"/>
-            <g><image href="assets/pesawat.webp" x="-140" y="-40" width="280" height="80"/>
-              <animateMotion dur="11s" repeatCount="indefinite" rotate="auto"><mpath href="#rutePesawat"/></animateMotion>
-              <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.1;.85;1" dur="11s" repeatCount="indefinite"/></g>
-          </svg>
-          <span class="pin" style="left:40.5%;top:52%">Borobudur</span>
-          <span class="pin" style="left:26%;top:50%">Gunung Bromo</span>
-          <span class="pin" style="left:55%;top:40%">Raja Ampat</span>
-          <span class="pin" style="left:74%;top:50%">Hutan hujan</span>
-          <span class="pin" style="left:11.5%;top:50%">Pura Bali</span>
-          <span class="pin" style="left:6%;top:70%">Sawah berundak</span>
-          <span class="pin" style="left:91%;top:31%">Phinisi</span>
-        </div>
+        <svg class="scene" viewBox="0 0 2000 855" preserveAspectRatio="xMidYMax slice" role="img" aria-label="Ilustrasi lanskap Indonesia: sawah berundak, pura, gunung berapi, Borobudur, gugusan karst laut, orangutan di rimba, kapal phinisi, dan sebuah pesawat yang mendekat">
+          <image href="assets/indonesia-landscape.jpg" width="2000" height="855" preserveAspectRatio="xMidYMax slice"/>
+          <path id="rutePesawat" d="M2160 96 C1780 40 1320 130 1060 330" fill="none" stroke="#15303F" stroke-opacity=".45" stroke-width="3" stroke-dasharray="3 14" stroke-linecap="round"/>
+          <g id="pesawat" opacity="0">
+            <g transform="rotate(-9) scale(-1 1)"><image href="assets/pesawat.webp" x="-150" y="-44" width="300" height="87"/></g>
+            <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1" keyTimes="0;1"><mpath href="#rutePesawat"/></animateMotion>
+            <animate attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;1;1;0" keyTimes="0;.1;.86;1"/>
+          </g>
+        </svg>
+        <span class="pin" style="left:41%;top:55%">Borobudur</span>
+        <span class="pin" style="left:26%;top:52%">Gunung Bromo</span>
+        <span class="pin" style="left:57%;top:53%">Raja Ampat</span>
+        <span class="pin" style="left:7%;top:72%">Sawah berundak</span>
+        <span class="pin" style="left:91%;top:68%">Kapal phinisi</span>
       </div>
       <div class="ticket-body">
-        <p class="tagline">Pintu masuk bukan destinasi.</p>
         <p class="lead" id="heroLead">Memuat data…</p>
         <div class="origin-row" aria-label="Contoh negara asal wisatawan"><span class="origin-lab">Berangkat dari</span><span id="heroFlags" class="flags"></span></div>
         <a class="cta" href="#naikturun">Mulai perjalanan <span aria-hidden="true">↓</span></a>
@@ -220,21 +218,20 @@
 </section>
 
 <!-- ================= KESIMPULAN ================= -->
-<section id="kesimpulan" data-title="Kesimpulan" class="concl">
-  <div class="postcard card-about card-concl">
-    <div class="pc-stamp" aria-hidden="true"><img src="assets/flags/id.svg" alt=""></div>
-    <p class="kicker">Ringkasan perjalanan</p>
-    <h2>Pintu masuk bukan destinasi</h2>
-    <p class="intro" id="cLead"></p>
-    <ol class="finds" id="cFinds"></ol>
-    <h3 class="h3">Apa artinya untuk judul kita?</h3>
-    <p id="cTitle"></p>
-    <h3 class="h3">Batas yang perlu diingat</h3>
-    <ul class="lim" id="cLim"></ul>
-    <h3 class="h3">Langkah berikutnya</h3>
-    <ul class="lim" id="cNext"></ul>
-    <p class="note">Sumber: BPS, statistik kunjungan wisatawan mancanegara 2024 dan 2025, PDRB provinsi menurut lapangan usaha 2020–2024, dan korpus Berita Resmi Statistik pariwisata. Rincian URL dan tanggal akses ada di bawah tiap grafik.</p>
+<section id="kesimpulan" data-title="Kesimpulan">
+  <div class="sec-head">
+    <p class="kicker">Enam · Kembali ke judul</p>
+    <h2>Jadi, apa arti "pintu masuk bukan destinasi"?</h2>
+    <p class="intro" id="kesIntro">Memuat…</p>
   </div>
+  <div class="kes-grid" id="kesGrid"></div>
+  <blockquote class="kes-quote" id="kesQuote"></blockquote>
+  <div class="kes-two">
+    <div class="kes-box" id="kesGerbang"></div>
+    <div class="kes-box" id="kesBatas"></div>
+  </div>
+  <p class="kes-end"><a class="cta" href="#tiket">Kembali ke tiket <span aria-hidden="true">↑</span></a></p>
+  <p class="note" id="kesSumber"></p>
 </section>
 
 <!-- ================= TENTANG ================= -->

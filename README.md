@@ -74,7 +74,7 @@ Warna data memakai palet Okabe-Ito dan Viridis (ramah buta warna). Terakota, tea
 - PDRB memakai harga konstan (ADHK), sehingga porsi antarsektor tidak persis sama dengan struktur nominal (ADHB). PDRB 2023 angka sementara dan 2024 angka sangat sementara.
 - Total wisman 2024 menurut tabel bulanan (13.886.678) berbeda dengan total diagram aliran (13.902.420). Sebabnya belum dikonfirmasi.
 - Pada total 2020 ada selisih 60 kunjungan antara jumlah bulanan dan tabel tahunan (belum dicek di PDF).
-- Teks: kata "penumpang" menghilang setelah data 2023-07 dan "perjalanan/wisnus" muncul sejak 2023-06. Dugaannya perubahan format BRS, bukan perubahan bahasa akibat pandemi. Dugaan ini belum dibuktikan.
+- Teks: kata "penumpang" menghilang setelah data 2023-07 dan "perjalanan/wisnus" muncul sejak 2023-06. Judul BRS menunjukkan sebabnya: sampai data 2023-07 BRS memuat pariwisata sekaligus penumpang angkutan, dan sejak data 2023-08 hanya pariwisata. Jadi ini perubahan format laporan, bukan perubahan bahasa akibat pandemi. Belum ada pernyataan resmi BPS tentang pemisahan itu, dan apakah transportasi kini terbit terpisah belum diperiksa.
 - Pintu "Perbatasan Laut/Darat" dan "Pintu lainnya" tidak punya koordinat, jadi tidak tergambar sebagai busur di peta. Persentasenya dicantumkan di bawah peta.
 - Titik putus-putus pada peta (misalnya "Eropa Timur Lainnya") adalah titik tengah wilayah, bukan lokasi negara.
 - Ilustrasi hero hanya hiasan dan bukan data. Bagian Kesimpulan menghitung semua angkanya dari data yang sama dengan grafik.
